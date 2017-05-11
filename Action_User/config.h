@@ -21,13 +21,19 @@
 
 
 /********define**********/
+//#define DATAPOOL
+
 /*跟随模式*/
-//#define TRACK
+#define TRACK
+
 /*debug模式是看delta各种参数之间的关系*/
-#define DEGUG
+//#define DEGUG
+
 /*这是走到任意一个点*/
 //#define TRYPOINT
-/*除此之外是路径设计并跟随*/
+
+/*路径设计并跟随*/
+//#define ROUTEPLAN
 
 #define MASTERARM             120.f
 #define SLAVEARM              220.f
@@ -36,7 +42,8 @@
 #define SQRT3                 1.73205f
 #define BASESTARTPOS          -141.f		//未确定
 #define STARTANGLE            70.f
-#define RECORDPOINT           500
+#define RECORDPOINT           2000
+#define POOLSIZE              2000
 /*
 三个轮子；编码器和姿态的对应是固定的
 109.41°时是-7，内正外负(旋转正方向)
@@ -49,7 +56,7 @@
 //教学最小步调
 #define TOUCH(a,b,c)   ((__sqrtf(pow((a.x-b.x),2)+pow((a.y-b.y),2)+pow((a.z-b.z),2)))>c)
 
-#define ZPLAN        -250
+#define ZPLAN        -300
 /*******typedef**********/
 typedef  struct {
 	float x;

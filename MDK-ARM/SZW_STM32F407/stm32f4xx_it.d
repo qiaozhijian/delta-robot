@@ -14,6 +14,7 @@
 .\szw_stm32f407\stm32f4xx_it.o: ..\Action_User\timer.h
 .\szw_stm32f407\stm32f4xx_it.o: ..\Action_User\can.h
 .\szw_stm32f407\stm32f4xx_it.o: ..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_can.h
+.\szw_stm32f407\stm32f4xx_it.o: ..\Action_User\config.h
 .\szw_stm32f407\stm32f4xx_it.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\String.h
 .\szw_stm32f407\stm32f4xx_it.o: ..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_dma.h
 .\szw_stm32f407\stm32f4xx_it.o: ..\Action_User\gpio.h

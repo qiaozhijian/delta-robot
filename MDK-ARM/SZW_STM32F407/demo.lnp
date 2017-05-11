@@ -9,6 +9,7 @@
 ".\szw_stm32f407\usart.o"
 ".\szw_stm32f407\custom.o"
 ".\szw_stm32f407\pose_plan.o"
+".\szw_stm32f407\flash.o"
 ".\szw_stm32f407\misc.o"
 ".\szw_stm32f407\stm32f4xx_adc.o"
 ".\szw_stm32f407\stm32f4xx_can.o"

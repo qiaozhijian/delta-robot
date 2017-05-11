@@ -201,20 +201,28 @@ void TIM4_IRQHandler(void)
 		TIM_ClearITPendingBit(TIM4, TIM_IT_Update);
 	}
 }
-
+#ifndef DATAPOOL
 static uint8_t intrctEnd=0;
 /*其实可以省略指令标志而节约内存，但是实际为了可读性强没有这么做*/
 static char instruct[1][15]={0};
 char* const pInstruct=instruct[0];
 static char intrctOrder=0;
+#else
+static int instruct[2]={0,0};
+int* const pInstruct=instruct;
+#endif
+/*你： 0xC4 0xE3  好：  0xBA 0xC3*/
+/**G0X+10Y+10Z250*/
 void UART5_IRQHandler(void)
 {
 	uint8_t data = 0;
 	static uint8_t count=0;
-	if(USART_GetITStatus(UART5, USART_IT_RXNE)==SET)   
+	if(USART_GetITStatus(UART5, USART_IT_RXNE)==SET)
 	{
 		USART_ClearITPendingBit( UART5,USART_IT_RXNE);
 		data=USART_ReceiveData(UART5);
+	}
+		#ifndef DATAPOOL
 		switch(count)
 		{
 			case 0:
@@ -374,9 +382,25 @@ void UART5_IRQHandler(void)
 		}
 		
 		
+	
+	#else
+	switch(count)
+	{
+		case 0:
+			instruct[0]=data;
+			count++;
+			break;
+		case 1:
+			instruct[1]=data;
+			count=0;
+		default:
+			count=0;
+			break;
 	}
-	 
+	 #endif
+	
 }
+#ifndef DATAPOOL
 char* getPInstruct(void)
 {
 		return pInstruct;
@@ -385,6 +409,13 @@ uint8_t getIntrctOrder(void)
 {
 		return intrctOrder;
 }
+#else
+int* getPInstruct(void)
+{
+		return pInstruct;
+}
+#endif
+
 void USART3_IRQHandler(void)
 {
 	uint8_t data = 0;

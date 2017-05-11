@@ -30,7 +30,6 @@
 
 /********function export*********/
 void RouteControl(void);
-uint8_t getTeachFinish(void);
 uint8_t KeyCatch(void);
 #endif
 

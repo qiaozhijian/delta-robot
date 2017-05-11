@@ -17,6 +17,7 @@
 .\szw_stm32f407\main.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 .\szw_stm32f407\main.o: ..\Action_User\can.h
 .\szw_stm32f407\main.o: ..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_can.h
+.\szw_stm32f407\main.o: ..\Action_User\config.h
 .\szw_stm32f407\main.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\String.h
 .\szw_stm32f407\main.o: ..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_dma.h
 .\szw_stm32f407\main.o: ..\Action_User\gpio.h
@@ -27,8 +28,8 @@
 .\szw_stm32f407\main.o: ..\Action_User\route_ctr.h
 .\szw_stm32f407\main.o: ..\Libraries\dsplib\Include\arm_math.h
 .\szw_stm32f407\main.o: ..\Libraries\dsplib\Include\core_cm4.h
-.\szw_stm32f407\main.o: ..\Action_User\config.h
 .\szw_stm32f407\main.o: ..\Action_User\pose_plan.h
 .\szw_stm32f407\main.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
 .\szw_stm32f407\main.o: ..\Action_User\custom.h
 .\szw_stm32f407\main.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+.\szw_stm32f407\main.o: ..\Action_User\flash.h

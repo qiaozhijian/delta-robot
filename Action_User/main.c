@@ -16,27 +16,30 @@
 #include "stm32f4xx_usart.h"
 #include "stdio.h"
 #include "arm_math.h"
+#include "flash.h"
 
 void init(void)
 {
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);	
 	  
-	TIM_Init(TIM2,2999,839,0,0);					//主周期定时10ms	
+	TIM_Init(TIM2,999,839,0,0);					//主周期定时10ms	
 	
 	UART5_Init(115200);		//调试用蓝牙
 	
 	USART3_Init(115200);
 	KeyInit();//按住为1
-	
+	Flash_Init();
 	CAN_Config(CAN1,500,GPIOB,GPIO_Pin_8, GPIO_Pin_9);
 	#ifndef DEGUG
+	#ifndef DATAPOOL
 	elmo_Init();
 	Pos_cfg(1,5000,5000,100);
 	Pos_cfg(2,5000,5000,100);
 	Pos_cfg(3,5000,5000,100);
-	PosCrl(1,0,-250);
-	PosCrl(2,0,-250);
-	PosCrl(3,0,-250);
+	PosCrl(1,0,-100);
+	PosCrl(2,0,-100);
+	PosCrl(3,0,-100);
+	#endif
 	#endif
 }
 int main(void)

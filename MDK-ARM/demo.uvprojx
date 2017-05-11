@@ -10,6 +10,7 @@
       <TargetName>ACTION</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
+      <pArmCC>5060422::V5.06 update 4 (build 422)::ARMCC</pArmCC>
       <pCCUsed>5060422::V5.06 update 4 (build 422)::ARMCC</pCCUsed>
       <TargetOption>
         <TargetCommonOption>
@@ -428,6 +429,11 @@
               <FileName>pose_plan.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Action_User\pose_plan.c</FilePath>
+            </File>
+            <File>
+              <FileName>flash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Action_User\flash.c</FilePath>
             </File>
           </Files>
         </Group>

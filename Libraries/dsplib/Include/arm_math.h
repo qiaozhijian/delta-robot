@@ -86,7 +86,7 @@
    * <b>Toolchain Support</b>
    *
    * The library has been developed and tested with MDK-ARM version 4.60.
-   * The library is being tested in GCC and IAR toolchains and updates on this activity will be made available shortly.
+   * The library is being tested in GCC and IAR toolchains and updates on this activity will be made available intly.
    *
    * <b>Building the Library</b>
    *
@@ -730,8 +730,8 @@ extern "C"
     q31_t sum;
     q31_t r, s;
 
-    r = (short) x;
-    s = (short) y;
+    r = (int) x;
+    s = (int) y;
 
     r = __SSAT(r + s, 16);
     s = __SSAT(((q31_t) ((x >> 16) + (y >> 16))), 16) << 16;
@@ -753,8 +753,8 @@ extern "C"
     q31_t sum;
     q31_t r, s;
 
-    r = (short) x;
-    s = (short) y;
+    r = (int) x;
+    s = (int) y;
 
     r = ((r >> 1) + (s >> 1));
     s = ((q31_t) ((x >> 17) + (y >> 17))) << 16;
@@ -776,8 +776,8 @@ extern "C"
     q31_t sum;
     q31_t r, s;
 
-    r = (short) x;
-    s = (short) y;
+    r = (int) x;
+    s = (int) y;
 
     r = __SSAT(r - s, 16);
     s = __SSAT(((q31_t) ((x >> 16) - (y >> 16))), 16) << 16;
@@ -798,8 +798,8 @@ extern "C"
     q31_t diff;
     q31_t r, s;
 
-    r = (short) x;
-    s = (short) y;
+    r = (int) x;
+    s = (int) y;
 
     r = ((r >> 1) - (s >> 1));
     s = (((x >> 17) - (y >> 17)) << 16);
@@ -821,8 +821,8 @@ extern "C"
 
     sum =
       ((sum +
-        clip_q31_to_q15((q31_t) ((short) (x >> 16) + (short) y))) << 16) +
-      clip_q31_to_q15((q31_t) ((short) x - (short) (y >> 16)));
+        clip_q31_to_q15((q31_t) ((int) (x >> 16) + (int) y))) << 16) +
+      clip_q31_to_q15((q31_t) ((int) x - (int) (y >> 16)));
 
     return sum;
   }
@@ -838,8 +838,8 @@ extern "C"
     q31_t sum;
     q31_t r, s;
 
-    r = (short) x;
-    s = (short) y;
+    r = (int) x;
+    s = (int) y;
 
     r = ((r >> 1) - (y >> 17));
     s = (((x >> 17) + (s >> 1)) << 16);
@@ -862,8 +862,8 @@ extern "C"
 
     sum =
       ((sum +
-        clip_q31_to_q15((q31_t) ((short) (x >> 16) - (short) y))) << 16) +
-      clip_q31_to_q15((q31_t) ((short) x + (short) (y >> 16)));
+        clip_q31_to_q15((q31_t) ((int) (x >> 16) - (int) y))) << 16) +
+      clip_q31_to_q15((q31_t) ((int) x + (int) (y >> 16)));
 
     return sum;
   }
@@ -879,8 +879,8 @@ extern "C"
     q31_t sum;
     q31_t r, s;
 
-    r = (short) x;
-    s = (short) y;
+    r = (int) x;
+    s = (int) y;
 
     r = ((r >> 1) + (y >> 17));
     s = (((x >> 17) - (s >> 1)) << 16);
@@ -898,8 +898,8 @@ extern "C"
   q31_t y)
   {
 
-    return ((q31_t) (((short) x * (short) (y >> 16)) -
-                     ((short) (x >> 16) * (short) y)));
+    return ((q31_t) (((int) x * (int) (y >> 16)) -
+                     ((int) (x >> 16) * (int) y)));
   }
 
   /*
@@ -910,8 +910,8 @@ extern "C"
   q31_t y)
   {
 
-    return ((q31_t) (((short) x * (short) (y >> 16)) +
-                     ((short) (x >> 16) * (short) y)));
+    return ((q31_t) (((int) x * (int) (y >> 16)) +
+                     ((int) (x >> 16) * (int) y)));
   }
 
   /*
@@ -943,8 +943,8 @@ extern "C"
   q31_t sum)
   {
 
-    return (sum + ((short) (x >> 16) * (short) (y >> 16)) +
-            ((short) x * (short) y));
+    return (sum + ((int) (x >> 16) * (int) (y >> 16)) +
+            ((int) x * (int) y));
   }
 
   /*
@@ -956,8 +956,8 @@ extern "C"
   q31_t sum)
   {
 
-    return (sum + ((short) (x >> 16) * (short) (y)) +
-            ((short) x * (short) (y >> 16)));
+    return (sum + ((int) (x >> 16) * (int) (y)) +
+            ((int) x * (int) (y >> 16)));
   }
 
   /*
@@ -969,8 +969,8 @@ extern "C"
   q31_t sum)
   {
 
-    return (sum - ((short) (x >> 16) * (short) (y)) +
-            ((short) x * (short) (y >> 16)));
+    return (sum - ((int) (x >> 16) * (int) (y)) +
+            ((int) x * (int) (y >> 16)));
   }
 
   /*
@@ -982,8 +982,8 @@ extern "C"
   q63_t sum)
   {
 
-    return (sum + ((short) (x >> 16) * (short) (y >> 16)) +
-            ((short) x * (short) y));
+    return (sum + ((int) (x >> 16) * (int) (y >> 16)) +
+            ((int) x * (int) y));
   }
 
   /*
@@ -995,8 +995,8 @@ extern "C"
   q63_t sum)
   {
 
-    return (sum + ((short) (x >> 16) * (short) y)) +
-      ((short) x * (short) (y >> 16));
+    return (sum + ((int) (x >> 16) * (int) y)) +
+      ((int) x * (int) (y >> 16));
   }
 
   /*

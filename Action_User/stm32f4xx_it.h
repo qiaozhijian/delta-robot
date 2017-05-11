@@ -39,14 +39,14 @@
 #include "usart.h"
 #include "timer.h"
 #include "can.h"
-
+#include "config.h"
 
 #include "String.h"
 #include "stm32f4xx_dma.h"
 #include "gpio.h"
 #include "stm32f4xx_exti.h"
 #include "elmo.h"
-
+#include "config.h"
 
 /* Includes ------------------------------------------------------------------*/
 
@@ -66,8 +66,12 @@ void DebugMon_Handler(void);
 uint8_t getTimeFlag(void);
 int* getChainVel(void);
 int* getChainCode(void);
+#ifndef DATAPOOL
 char* getPInstruct(void);
 uint8_t getIntrctOrder(void);
+#else
+int* getPInstruct(void);
+#endif
 #ifdef __cplusplus
 }
 #endif

@@ -1,40 +1,31 @@
 #include "route_ctr.h"
 #include "stdio.h"
+#include "flash.h"
+/************global variable  define**********/
+static coordinate_t gBaseCenter_t = { 0,0,BASESTARTPOS };
+static  int gChainCode[3] = { 0 ,0 ,0 };
+static  float gChainAngle[3] = { STARTANGLE ,STARTANGLE ,STARTANGLE };
+//static  int gChainVel[3] = { 0, 0 ,0 };
 
-/************variable  define**********/
-#ifdef  TRACK
+/**********function claim************/
+void Sprintf(float a,float b,float c,float d,float e,float f);
+
+#ifdef TRACK
+/************global variable  define**********/
+static float gChainAngleAim[3]={0};
 static  int gChainCodeAim[RECORDPOINT][3]={0};
 static uint16_t trackOrder=0;
-#else
-static  int gChainCodeAim[3]={0};
-#endif
-static  int gChainCode[3] = { 0 ,0 ,0 };
-
-static  float gChainAngle[3] = { STARTANGLE ,STARTANGLE ,STARTANGLE };
-static float gChainAngleAim[3]={0};
-
-static coordinate_t gBaseCenter_t = { 0,0,BASESTARTPOS };
-//ZPLAN是工作平台，一般不变
-static coordinate_t gBaseCenterAim_t = { 0,0,ZPLAN };
-
-static  int gChainVel[3] = { 0, 0 ,0 };
 static uint8_t gTeachFinish=0;
-//速度单位mm/s  角速度为弧度制
-static float gVelocity[3]={ 40,35,14 };
-static float gAngularVel[3]={ 0,0,0 };
-/************funtction  claim**********/
-#ifdef  TRACK
-uint8_t	ReachToPoint(uint8_t pointToReach);	
-#else
-uint8_t ReachToPoint(uint8_t error);
-#endif
+static coordinate_t gBaseCenterAim_t = { 0,0,ZPLAN };
+/**********function claim************/
 void ChainCodeAimUpdate(void);
+uint8_t	ReachToPoint(uint8_t pointToReach);	
 void ParaUpdate(void);
-uint8_t TrackByLine(coordinate_t startPoint,coordinate_t endPoint,uint8_t steps,uint8_t error);
+
+
 void RouteControl(void)
 {
-	
-	#ifdef TRACK
+	ParaUpdate();
 	static uint16_t pointToReach=0;
 	/*读取需要的编码器值和速度值*/
 	ParaUpdate();	
@@ -53,14 +44,95 @@ void RouteControl(void)
 			pointToReach=0;
 		}
 	}
-	#else
-	#ifdef DEGUG
+}
+
+
+void ChainCodeAimUpdate(void)
+{
+	static uint8_t key=0;
+	static coordinate_t baseCenter_Old_t={0,0,0};
+	static uint8_t keyCatch;
+	keyCatch=KeyCatch();
+	if(keyCatch&&key==1)
+	{
+		key=0;
+		gTeachFinish=1;
+		
+	}
+	if(keyCatch&&key==0)
+	{
+		key=1;
+		baseCenter_Old_t.x=gBaseCenter_t.x;
+		baseCenter_Old_t.y=gBaseCenter_t.y;
+		baseCenter_Old_t.z=gBaseCenter_t.z;
+	}
+	if(TOUCH(baseCenter_Old_t,gBaseCenter_t,6)&&key==1)
+	{
+	//Sprintf(baseCenter_Old_t.x,baseCenter_Old_t.y,baseCenter_Old_t.z,gBaseCenter_t.x,gBaseCenter_t.y,gBaseCenter_t.z);
+		for(uint8_t i=0;i<3;i++)
+		{
+		gChainCodeAim[trackOrder][i]=gChainCode[i];
+		}
+		USART_OUT(UART5,(uint8_t*)"%d\t%d\t%d\r\n",gChainCode[0],gChainCode[1],gChainCode[2]);
+		trackOrder++;
+		//进来一次发一次发不完，改成最后一起发
+		baseCenter_Old_t.x=gBaseCenter_t.x;
+		baseCenter_Old_t.y=gBaseCenter_t.y;
+		baseCenter_Old_t.z=gBaseCenter_t.z;
+	}
+}
+
+uint8_t	ReachToPoint(uint8_t pointToReach)
+{
+	static int chainAim[3]={0};
+	for(uint8_t i=0;i<3;i++)
+	{
+	chainAim[i]=gChainCodeAim[pointToReach][i];
+	gChainAngleAim[i]=ANGLE(chainAim[i]);
+	}
+	PosCrl(1,0,chainAim[0]);
+	PosCrl(2,0,chainAim[1]);
+	PosCrl(3,0,chainAim[2]);
+	BaseCenterUpdate(gChainAngleAim,&gBaseCenterAim_t);
+	//if((abs(chainAim[0]-gChainCode[0])<10)&&(abs(chainAim[1]-gChainCode[1])<10)&&(abs(chainAim[2]-gChainCode[2])<10))
+	if((fabs(gBaseCenterAim_t.x-gBaseCenter_t.x)<3)&&(fabs(gBaseCenterAim_t.y-gBaseCenter_t.y)<3)&&(fabs(gBaseCenterAim_t.z-gBaseCenter_t.z)<3))
+	{
+		USART_OUT(UART5,(uint8_t*)"%d\t%d\t%d\r\n",chainAim[0],chainAim[1],chainAim[2]);
+		return 1;
+	}
+	else
+		return 0;
+}
+
+#endif
+
+
+#ifdef DEGUG
+static  float gAngularVel[3] = { 0, 0 ,0 };
+static  float gVelocity[3] = { 0, 0 ,0 };
+void RouteControl(void)
+{
 	//BaseCenterUpdate(gChainAngle,&gBaseCenter_t);
 	ChainUpdateByBase(gBaseCenter_t, gChainAngle);
 	AngularVelUpdate(gBaseCenter_t,gChainAngle,gVelocity,gAngularVel);
 	VelocityUpdate(gBaseCenter_t,gChainAngle,gAngularVel,gVelocity);
-	#else
-	#ifdef TRYPOINT
+}
+#endif
+
+
+#ifdef TRYPOINT
+/************global variable  define**********/
+
+static coordinate_t gBaseCenterAim_t = { 0,0,ZPLAN };
+static coordinate_t gRBaseCenterAim_t = { 0,0,ZPLAN };
+static float gChainAngleAim[3]={0};
+static  int gChainCodeAim[3]={0};
+static float preValue[3]={0};
+/**********function claim************/
+void ParaUpdate(void);
+uint8_t ReachToPoint(uint8_t error);
+void RouteControl(void)
+{
 	char* const pInstruct=getPInstruct();
 	uint8_t intrctOrder=getIntrctOrder();
 	uint16_t instruct[9]={
@@ -87,127 +159,90 @@ void RouteControl(void)
 		gBaseCenterAim_t.y=0;
 		gBaseCenterAim_t.z=-250;
 	}
-	
-	ChainUpdateByBase(gBaseCenterAim_t, gChainAngleAim);
+	for(int i=0;i<3;i++)
+	{
+	gRBaseCenterAim_t.x=gBaseCenterAim_t.x+preValue[0];
+	gRBaseCenterAim_t.y=gBaseCenterAim_t.y+preValue[1];
+	gRBaseCenterAim_t.z=gBaseCenterAim_t.z+preValue[2];
+	}
+	ChainUpdateByBase(gRBaseCenterAim_t, gChainAngleAim);
 	for(uint8_t i=0;i<3;i++)
 	gChainCodeAim[i]=CODE(gChainAngleAim[i]);
-	ReachToPoint();
+	ReachToPoint(3);
 	BaseCenterUpdate(gChainAngle,&gBaseCenter_t);
-	#else
-	/*读取需要的编码器值和速度值*/
+}
+
+uint8_t ReachToPoint(uint8_t error)
+{
+	static int CodeLast[3]={0};
+	static int countForAdd=0;
+	
+	for(uint8_t i=0;i<3;i++)
+	PosCrl(i+1,0,gChainCodeAim[i]);
+	/*获得当时坐标编码*/
+	BaseCenterUpdate(gChainAngle,&gBaseCenter_t);
+	if(ERROR(gBaseCenter_t,gBaseCenterAim_t,error))
+	{
+	for(uint8_t i=0;i<3;i++)
+		CodeLast[i]=gChainCode[i];
+//	for(int i=0;i<3;i++)
+//	{
+//		preValue[i]=0;
+//	}
+	return 1;
+	}
+	else
+	{
+	if((CodeLast[0]==gChainCode[0])&&(CodeLast[1]==gChainCode[1])&&(CodeLast[2]==gChainCode[2]))
+		countForAdd++;
+	else
+		countForAdd=0;
+	if(countForAdd>100)
+	{
+	countForAdd=0;
+	if(gBaseCenterAim_t.x>gBaseCenter_t.x)
+		preValue[0]++;
+	else
+		preValue[0]--;
+	if(gBaseCenterAim_t.y>gBaseCenter_t.y)
+		preValue[1]++;
+	else
+		preValue[1]--;
+	if(gBaseCenterAim_t.z>gBaseCenter_t.z)
+		preValue[2]++;
+	else
+		preValue[2]--;
+	for(int i=0;i<3;i++)
+	{
+	if(fabs(preValue[i])>10)
+		preValue[i]=0;
+	}
+	}
+	for(int i=0;i<3;i++)
+	CodeLast[i]=gChainCode[i];
+	return 0;
+	}
+}
+#endif
+
+
+#ifdef ROUTEPLAN
+/************global variable  define**********/
+static coordinate_t gBaseCenterAim_t = { 0,0,ZPLAN };
+static float gChainAngleAim[3]={0};
+static  int gChainCodeAim[3]={0};
+/**********function claim************/
+void ParaUpdate(void);
+uint8_t TrackByLine(coordinate_t startPoint,coordinate_t endPoint,uint8_t steps,uint8_t error);
+void RouteControl(void)
+{
 	ParaUpdate();
 	static uint8_t mode=0;
 	static coordinate_t startPoint={0.f,0.f,-270.f};
 	static coordinate_t endPoint={20.f,0.f,-270.f};
 	TrackByLine(startPoint,endPoint,6,5);
-	
-	#endif
-	#endif
-	#endif
 
 }
-void Sprintf(float a,float b,float c,float d,float e,float f)
-{
-	unsigned char buff[10];
-	sprintf((char*)buff,"%f",a);
-	USART_OUT(USART3,buff);
-	USART_OUT(USART3,(uint8_t *)"\t");
-	sprintf((char*)buff,"%f",b);
-	USART_OUT(USART3,buff);
-	USART_OUT(USART3,(uint8_t *)"\t");
-	sprintf((char*)buff,"%f",c);
-	USART_OUT(USART3,buff);
-	USART_OUT(USART3,(uint8_t *)"\t");
-	sprintf((char*)buff,"%f",d);
-	USART_OUT(USART3,buff);
-	USART_OUT(USART3,(uint8_t *)"\t");
-	sprintf((char*)buff,"%f",e);
-	USART_OUT(USART3,buff);
-	USART_OUT(USART3,(uint8_t *)"\t");
-	sprintf((char*)buff,"%f",f);
-	USART_OUT(USART3,buff);
-	USART_OUT(USART3,(uint8_t *)"\r\n");
-}
-/*TRACK表示跟随模式 非TRACK为路径规划跟随模式*/
-#ifdef TRACK
-void ChainCodeAimUpdate(void)
-{
-	static uint8_t key=0;
-	static coordinate_t baseCenter_Old_t={0,0,0};
-	static uint8_t keyCatch;
-	static float debug=0;
-	keyCatch=KeyCatch();
-	if(keyCatch&&key==1)
-	{
-		key=0;
-		gTeachFinish=1;
-		
-	}
-	if(keyCatch&&key==0)
-	{
-		key=1;
-		baseCenter_Old_t.x=gBaseCenter_t.x;
-		baseCenter_Old_t.y=gBaseCenter_t.y;
-		baseCenter_Old_t.z=gBaseCenter_t.z;
-	}
-	debug=(__sqrtf(pow((baseCenter_Old_t.x-gBaseCenter_t.x),2)+pow((baseCenter_Old_t.y-gBaseCenter_t.y),2)+pow((baseCenter_Old_t.z-gBaseCenter_t.z),2)));
-	if(TOUCH(baseCenter_Old_t,gBaseCenter_t,7)&&key==1)
-	{
-	//Sprintf(baseCenter_Old_t.x,baseCenter_Old_t.y,baseCenter_Old_t.z,gBaseCenter_t.x,gBaseCenter_t.y,gBaseCenter_t.z);
-		for(uint8_t i=0;i<3;i++)
-		{
-		gChainCodeAim[trackOrder][i]=gChainCode[i];
-		}
-		trackOrder++;
-		//进来一次发一次发不完，改成最后一起发
-		baseCenter_Old_t.x=gBaseCenter_t.x;
-		baseCenter_Old_t.y=gBaseCenter_t.y;
-		baseCenter_Old_t.z=gBaseCenter_t.z;
-	}
-}
-
-uint8_t	ReachToPoint(uint8_t pointToReach)
-{
-	static int chainAim[3]={0};
-	static float error=0.f;
-//	static float aaa=1;
-//	if(aaa==1)
-//	{
-//		aaa=0;
-//		for(int j=0;j<trackOrder;j++)
-//		{
-//		for(uint8_t i=0;i<3;i++)
-//		{
-//		chainAim[i]=gChainCodeAim[j][i];
-//		gChainAngleAim[i]=ANGLE(chainAim[i]);
-//		}
-//		BaseCenterUpdate(gChainAngleAim,&gBaseCenterAim_t);
-//	//	USART_OUT(USART3,(uint8_t*)"%d\t%d\r\n",(int)gBaseCenterAim_t.x,(int)gBaseCenterAim_t.y);
-//		}
-//	}
-	for(uint8_t i=0;i<3;i++)
-	{
-	chainAim[i]=gChainCodeAim[pointToReach][i];
-	gChainAngleAim[i]=ANGLE(chainAim[i]);
-	}
-	PosCrl(1,0,chainAim[0]);
-	PosCrl(2,0,chainAim[1]);
-	PosCrl(3,0,chainAim[2]);
-	BaseCenterUpdate(gChainAngleAim,&gBaseCenterAim_t);
-	//error=(__sqrtf(pow((gBaseCenterAim_t.x-gBaseCenter_t.x),2)+pow((gBaseCenterAim_t.y-gBaseCenter_t.y),2)+pow((gBaseCenterAim_t.z-gBaseCenter_t.z),2)));
-	//USART_OUT(USART3,(uint8_t*)"%d,%d,%d\tact:%d,%d,%d\r\n",(int)gBaseCenterAim_t.x,(int)gBaseCenterAim_t.y,(int)gBaseCenterAim_t.z,(int)gBaseCenter_t.x,(int)gBaseCenter_t.y,(int)gBaseCenter_t.z);
-	//USART_OUT(USART3,(uint8_t*)"%d,%d,%d,%d,%d,%d\r\n",chainAim[0],chainAim[0],chainAim[1],gChainCode[2],gChainCode[1],gChainCode[2]);
-	//if((abs(chainAim[0]-gChainCode[0])<10)&&(abs(chainAim[1]-gChainCode[1])<10)&&(abs(chainAim[2]-gChainCode[2])<10))
-	if((fabs(gBaseCenterAim_t.x-gBaseCenter_t.x)<5)&&(fabs(gBaseCenterAim_t.y-gBaseCenter_t.y)<5)&&(fabs(gBaseCenterAim_t.z-gBaseCenter_t.z)<5))
-	{
-		
-	//USART_OUT(USART3,(uint8_t*)"%d\t%d\t%d\t%d\r\n",(int)gBaseCenterAim_t.x,(int)gBaseCenterAim_t.y,(int)gBaseCenter_t.x,(int)gBaseCenter_t.y);
-		return 1;
-	}
-	else
-		return 0;
-}
-#else
 void ChainCodeAimUpdate(void)
 {
 	ChainUpdateByBase(gBaseCenterAim_t, gChainAngleAim);
@@ -226,7 +261,6 @@ uint8_t ReachToPoint(uint8_t error)
 	else
 	return 0;
 }
-#endif
 uint8_t TrackByLine(coordinate_t startPoint,coordinate_t endPoint,uint8_t steps,uint8_t error)
 {
 	
@@ -337,17 +371,143 @@ uint8_t TrackByCircle(const coordinate_t startPoint,const coordinate_t endPoint,
 		return 0;
 
 }
+#endif
 
 
-uint8_t getTeachFinish(void)
+#ifdef DATAPOOL
+/************global variable  define**********/
+static float gChainAngleAim[3]={0};
+static  int gChainCodeAim[RECORDPOINT][3]={0};
+static uint16_t trackOrder[10]={0};
+static uint32_t countNum=0;
+void test(void)
 {
-return gTeachFinish;
+//int aaa[POOLSIZE]={1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
+//static int a=1;
+//int *result=GetResultArr();
+
+//if(a==0)
+//{
+//for(int i=0;i<POOLSIZE;i++)
+//aaa[i]=1;
+//for(int i=0;i<POOLSIZE;i++)
+//*(result+i)=aaa[i];
+//Flash_Write(GetFlashArr(),POOLSIZE*4);
+//	a=1;
+//}
+//if(a==1)
+//{
+//	a=2;
+//result=GetResultArr();
+//for(int i=0;i<4;i++)
+//	USART_OUT(UART5,(uint8_t*)"%d\r\n",*(result+i+POOLSIZE-4)+1);
+//}
+/*超出内存报警*/
+
+
+static int aaa[2]={0};
+
+if((aaa[0]!=*getPInstruct())||(aaa[1]!=*(getPInstruct()+1)))
+{
+	aaa[0]=*getPInstruct();
+	aaa[1]=*(getPInstruct()+1);
+	USART_OUT(UART5,(uint8_t*)"%s\r\n","input one successfully");
 }
+	
+
+
+}
+/**********function claim************/
+void ParaUpdate(void);
+uint8_t DataInput(void);
+
+void RouteControl(void)
+{
+		//ParaUpdate();
+		//DataInput();
+	test();
+}
+
+uint8_t DataInput(void)
+{
+  static uint8_t key=0;
+	static coordinate_t baseCenter_Old_t={0,0,0};
+	static uint8_t keyCatch;
+	static uint8_t indexForPool=0;
+	static int *result;
+	
+	result=GetResultArr();
+	keyCatch=KeyCatch();
+	/*一次演示结束*/
+	if(keyCatch&&key==1)
+	{
+		indexForPool++;
+		key=0;
+		Flash_Write(GetFlashArr(),4000);
+	}
+	/*一次演示开始*/
+	if(keyCatch&&key==0)
+	{
+		key=1;
+		baseCenter_Old_t.x=gBaseCenter_t.x;
+		baseCenter_Old_t.y=gBaseCenter_t.y;
+		baseCenter_Old_t.z=gBaseCenter_t.z;
+	}
+	/*把trackorder写成一个数组，输出每个trackorder，两次按键结束如果trackorder==0，则写flash*/
+	if(TOUCH(baseCenter_Old_t,gBaseCenter_t,7)&&key==1)
+	{
+		for(uint8_t i=0;i<3;i++)
+		{
+		gChainCodeAim[trackOrder[indexForPool]][i]=gChainCode[i];
+		*(result+trackOrder[indexForPool]*3+i)=gChainCodeAim[trackOrder[indexForPool]][i];
+		}
+		trackOrder[indexForPool]++;
+		//进来一次发一次发不完，改成最后一起发
+		baseCenter_Old_t.x=gBaseCenter_t.x;
+		baseCenter_Old_t.y=gBaseCenter_t.y;
+		baseCenter_Old_t.z=gBaseCenter_t.z;
+	}
+	
+	return 1;
+}
+#endif
+
+
+
+
+
+
+void Sprintf(float a,float b,float c,float d,float e,float f)
+{
+	unsigned char buff[10];
+	sprintf((char*)buff,"%f",a);
+	USART_OUT(USART3,buff);
+	USART_OUT(USART3,(uint8_t *)"\t");
+	sprintf((char*)buff,"%f",b);
+	USART_OUT(USART3,buff);
+	USART_OUT(USART3,(uint8_t *)"\t");
+	sprintf((char*)buff,"%f",c);
+	USART_OUT(USART3,buff);
+	USART_OUT(USART3,(uint8_t *)"\t");
+	sprintf((char*)buff,"%f",d);
+	USART_OUT(USART3,buff);
+	USART_OUT(USART3,(uint8_t *)"\t");
+	sprintf((char*)buff,"%f",e);
+	USART_OUT(USART3,buff);
+	USART_OUT(USART3,(uint8_t *)"\t");
+	sprintf((char*)buff,"%f",f);
+	USART_OUT(USART3,buff);
+	USART_OUT(USART3,(uint8_t *)"\r\n");
+}
+
+
+
+
 
 /*基础参数更新*/
 void ParaUpdate(void)
 {
-static  int chainCodeLast[3] = { 0 ,0 ,0 }; 
+//static  int chainCodeLast[3] = { 0 ,0 ,0 }; 
 	
 /*读编码器的绝对位置的值*/
 	  ReadActualPos(1);
@@ -360,11 +520,11 @@ static  int chainCodeLast[3] = { 0 ,0 ,0 };
 		gChainCode[1]=*(p+1);
 		gChainCode[2]=*(p+2);
 
-/*更新电机的速度向内为正*/
-	for(uint8_t i=0;i<3;i++)
-	gChainVel[i]=gChainCode[i]-chainCodeLast[i];
-	for(uint8_t i=0;i<3;i++)
-	chainCodeLast[i]=gChainCode[i];
+///*更新电机的速度向内为正*/
+//	for(uint8_t i=0;i<3;i++)
+//	gChainVel[i]=gChainCode[i]-chainCodeLast[i];
+//	for(uint8_t i=0;i<3;i++)
+//	chainCodeLast[i]=gChainCode[i];
 	
 /*通过编码器的值得知此时的角度*/
 	gChainAngle[0]=ANGLE(gChainCode[0]);
@@ -375,6 +535,10 @@ static  int chainCodeLast[3] = { 0 ,0 ,0 };
 	BaseCenterUpdate(gChainAngle,&gBaseCenter_t);
 
 }
+
+
+
+
 
 /*扫描行程开关*/
 uint8_t KeyCatch(void)
