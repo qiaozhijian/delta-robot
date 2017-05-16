@@ -39,6 +39,7 @@ void init(void)
 	PosCrl(1,0,-100);
 	PosCrl(2,0,-100);
 	PosCrl(3,0,-100);
+	//elmo_Disable(0);
 	#endif
 	#endif
 }

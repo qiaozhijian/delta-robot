@@ -35,12 +35,14 @@
 /*路径设计并跟随*/
 //#define ROUTEPLAN
 
-#define MASTERARM             120.f
-#define SLAVEARM              220.f
+#define MASTERARM             198.f
+#define SLAVEARM              354.f
+//#define MASTERARM             150.f
+//#define SLAVEARM              220.f
 #define R                     182.f
 #define r                     45.f
 #define SQRT3                 1.73205f
-#define BASESTARTPOS          -141.f		//未确定
+#define BASESTARTPOS          -500.1f		//未确定
 #define STARTANGLE            70.f
 #define RECORDPOINT           2000
 #define POOLSIZE              2000
@@ -48,8 +50,8 @@
 三个轮子；编码器和姿态的对应是固定的
 109.41°时是-7，内正外负(旋转正方向)
 */
-#define ANGLE(code)  ((float)(109.41f-abs(6+code)/4096.f*360.f))
-#define CODE(angle)  ((int)(-7.f-fabs(109.41f-angle)/360.f*4096.f))
+#define ANGLE(code)  ((double)(102.64f-abs(0+code)*0.208333f))
+#define CODE(angle)  ((int)(-0.f-fabs(102.64f-angle)*4.8f))
 
 //控制最小误差
 #define ERROR(a,b,c)   ((__sqrtf(pow((a.x-b.x),2)+pow((a.y-b.y),2)+pow((a.z-b.z),2)))<c)
@@ -59,15 +61,15 @@
 #define ZPLAN        -300
 /*******typedef**********/
 typedef  struct {
-	float x;
-	float y;
-	float z;
+	double x;
+	double y;
+	double z;
 }coordinate_t;
 
 typedef  struct {
-	float No1;
-	float No2;
-	float No3;
+	double No1;
+	double No2;
+	double No3;
 }angle_t;
 
 typedef unsigned char     uint8_t;

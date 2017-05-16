@@ -25,6 +25,7 @@
 #include "config.h"
 #include "pose_plan.h"
 #include "stdlib.h"
+#include "elmo.h"
 /********define**********/
 
 

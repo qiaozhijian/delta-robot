@@ -4,15 +4,15 @@
 /************global variable  define**********/
 static coordinate_t gBaseCenter_t = { 0,0,BASESTARTPOS };
 static  int gChainCode[3] = { 0 ,0 ,0 };
-static  float gChainAngle[3] = { STARTANGLE ,STARTANGLE ,STARTANGLE };
+static  double gChainAngle[3] = { STARTANGLE ,STARTANGLE ,STARTANGLE };
 //static  int gChainVel[3] = { 0, 0 ,0 };
 
 /**********function claim************/
-void Sprintf(float a,float b,float c,float d,float e,float f);
+void Sprintf(double a,double b,double c,double d,double e,double f);
 
 #ifdef TRACK
 /************global variable  define**********/
-static float gChainAngleAim[3]={0};
+static double gChainAngleAim[3]={0};
 static  int gChainCodeAim[RECORDPOINT][3]={0};
 static uint16_t trackOrder=0;
 static uint8_t gTeachFinish=0;
@@ -56,24 +56,32 @@ void ChainCodeAimUpdate(void)
 	if(keyCatch&&key==1)
 	{
 		key=0;
+		keyCatch=0;
+		elmo_Enable(1);
+		elmo_Enable(2);
+		elmo_Enable(3);
 		gTeachFinish=1;
 		
 	}
 	if(keyCatch&&key==0)
 	{
 		key=1;
+		elmo_Disable(0);
+		trackOrder=0;
+		gTeachFinish=0;
+		
 		baseCenter_Old_t.x=gBaseCenter_t.x;
 		baseCenter_Old_t.y=gBaseCenter_t.y;
 		baseCenter_Old_t.z=gBaseCenter_t.z;
 	}
-	if(TOUCH(baseCenter_Old_t,gBaseCenter_t,6)&&key==1)
+	if(TOUCH(baseCenter_Old_t,gBaseCenter_t,2)&&key==1)
 	{
 	//Sprintf(baseCenter_Old_t.x,baseCenter_Old_t.y,baseCenter_Old_t.z,gBaseCenter_t.x,gBaseCenter_t.y,gBaseCenter_t.z);
 		for(uint8_t i=0;i<3;i++)
 		{
 		gChainCodeAim[trackOrder][i]=gChainCode[i];
 		}
-		USART_OUT(UART5,(uint8_t*)"%d\t%d\t%d\r\n",gChainCode[0],gChainCode[1],gChainCode[2]);
+	//	USART_OUT(UART5,(uint8_t*)"%d\t%d\t%d\r\n",gChainCode[0],gChainCode[1],gChainCode[2]);
 		trackOrder++;
 		//进来一次发一次发不完，改成最后一起发
 		baseCenter_Old_t.x=gBaseCenter_t.x;
@@ -95,9 +103,9 @@ uint8_t	ReachToPoint(uint8_t pointToReach)
 	PosCrl(3,0,chainAim[2]);
 	BaseCenterUpdate(gChainAngleAim,&gBaseCenterAim_t);
 	//if((abs(chainAim[0]-gChainCode[0])<10)&&(abs(chainAim[1]-gChainCode[1])<10)&&(abs(chainAim[2]-gChainCode[2])<10))
-	if((fabs(gBaseCenterAim_t.x-gBaseCenter_t.x)<3)&&(fabs(gBaseCenterAim_t.y-gBaseCenter_t.y)<3)&&(fabs(gBaseCenterAim_t.z-gBaseCenter_t.z)<3))
+	if((fabs(gBaseCenterAim_t.x-gBaseCenter_t.x)<1)&&(fabs(gBaseCenterAim_t.y-gBaseCenter_t.y)<1)&&(fabs(gBaseCenterAim_t.z-gBaseCenter_t.z)<1))
 	{
-		USART_OUT(UART5,(uint8_t*)"%d\t%d\t%d\r\n",chainAim[0],chainAim[1],chainAim[2]);
+		//USART_OUT(UART5,(uint8_t*)"%d\t%d\t%d\r\n",chainAim[0],chainAim[1],chainAim[2]);
 		return 1;
 	}
 	else
@@ -108,14 +116,18 @@ uint8_t	ReachToPoint(uint8_t pointToReach)
 
 
 #ifdef DEGUG
-static  float gAngularVel[3] = { 0, 0 ,0 };
-static  float gVelocity[3] = { 0, 0 ,0 };
+static  double gAngularVel[3] = { 0, 0 ,0 };
+static  double gVelocity[3] = { 0, 0 ,0 };
 void RouteControl(void)
 {
-	//BaseCenterUpdate(gChainAngle,&gBaseCenter_t);
 	ChainUpdateByBase(gBaseCenter_t, gChainAngle);
-	AngularVelUpdate(gBaseCenter_t,gChainAngle,gVelocity,gAngularVel);
-	VelocityUpdate(gBaseCenter_t,gChainAngle,gAngularVel,gVelocity);
+	for(uint8_t i=0;i<3;i++)
+	gChainCode[i]=CODE(gChainAngle[i]);
+	for(uint8_t i=0;i<3;i++)
+	gChainAngle[i]=ANGLE(gChainCode[i]);
+	BaseCenterUpdate(gChainAngle,&gBaseCenter_t);
+	//AngularVelUpdate(gBaseCenter_t,gChainAngle,gVelocity,gAngularVel);
+//	VelocityUpdate(gBaseCenter_t,gChainAngle,gAngularVel,gVelocity);
 }
 #endif
 
@@ -124,10 +136,8 @@ void RouteControl(void)
 /************global variable  define**********/
 
 static coordinate_t gBaseCenterAim_t = { 0,0,ZPLAN };
-static coordinate_t gRBaseCenterAim_t = { 0,0,ZPLAN };
-static float gChainAngleAim[3]={0};
+static double gChainAngleAim[3]={0};
 static  int gChainCodeAim[3]={0};
-static float preValue[3]={0};
 /**********function claim************/
 void ParaUpdate(void);
 uint8_t ReachToPoint(uint8_t error);
@@ -141,7 +151,6 @@ void RouteControl(void)
 	(*(pInstruct+intrctOrder*15+11)-48)*100,(*(pInstruct+intrctOrder*15+12)-48)*10,*(pInstruct+intrctOrder*15+13)-48
 	};
 	ParaUpdate();
-	
 	if(instruct[0]=='+')
 		gBaseCenterAim_t.x=instruct[1]+instruct[2];
 	else
@@ -157,71 +166,29 @@ void RouteControl(void)
 	{
 		gBaseCenterAim_t.x=0;
 		gBaseCenterAim_t.y=0;
-		gBaseCenterAim_t.z=-250;
+		gBaseCenterAim_t.z=-400;
 	}
-	for(int i=0;i<3;i++)
-	{
-	gRBaseCenterAim_t.x=gBaseCenterAim_t.x+preValue[0];
-	gRBaseCenterAim_t.y=gBaseCenterAim_t.y+preValue[1];
-	gRBaseCenterAim_t.z=gBaseCenterAim_t.z+preValue[2];
-	}
-	ChainUpdateByBase(gRBaseCenterAim_t, gChainAngleAim);
+	ChainUpdateByBase(gBaseCenterAim_t, gChainAngleAim);
 	for(uint8_t i=0;i<3;i++)
 	gChainCodeAim[i]=CODE(gChainAngleAim[i]);
-	ReachToPoint(3);
+	ReachToPoint(1);
 	BaseCenterUpdate(gChainAngle,&gBaseCenter_t);
 }
 
 uint8_t ReachToPoint(uint8_t error)
 {
-	static int CodeLast[3]={0};
-	static int countForAdd=0;
-	
 	for(uint8_t i=0;i<3;i++)
 	PosCrl(i+1,0,gChainCodeAim[i]);
 	/*获得当时坐标编码*/
 	BaseCenterUpdate(gChainAngle,&gBaseCenter_t);
 	if(ERROR(gBaseCenter_t,gBaseCenterAim_t,error))
 	{
-	for(uint8_t i=0;i<3;i++)
-		CodeLast[i]=gChainCode[i];
-//	for(int i=0;i<3;i++)
-//	{
-//		preValue[i]=0;
-//	}
+	Sprintf(gBaseCenterAim_t.x,gBaseCenterAim_t.y,gBaseCenterAim_t.z,gBaseCenter_t.x,gBaseCenter_t.y,gBaseCenter_t.z);
+	//USART_OUT(UART5,(uint8_t*)"%d\t%d\t%d\r\n",gChainCode[0],gChainCode[1],gChainCode[2]);
 	return 1;
 	}
 	else
-	{
-	if((CodeLast[0]==gChainCode[0])&&(CodeLast[1]==gChainCode[1])&&(CodeLast[2]==gChainCode[2]))
-		countForAdd++;
-	else
-		countForAdd=0;
-	if(countForAdd>100)
-	{
-	countForAdd=0;
-	if(gBaseCenterAim_t.x>gBaseCenter_t.x)
-		preValue[0]++;
-	else
-		preValue[0]--;
-	if(gBaseCenterAim_t.y>gBaseCenter_t.y)
-		preValue[1]++;
-	else
-		preValue[1]--;
-	if(gBaseCenterAim_t.z>gBaseCenter_t.z)
-		preValue[2]++;
-	else
-		preValue[2]--;
-	for(int i=0;i<3;i++)
-	{
-	if(fabs(preValue[i])>10)
-		preValue[i]=0;
-	}
-	}
-	for(int i=0;i<3;i++)
-	CodeLast[i]=gChainCode[i];
 	return 0;
-	}
 }
 #endif
 
@@ -229,7 +196,7 @@ uint8_t ReachToPoint(uint8_t error)
 #ifdef ROUTEPLAN
 /************global variable  define**********/
 static coordinate_t gBaseCenterAim_t = { 0,0,ZPLAN };
-static float gChainAngleAim[3]={0};
+static double gChainAngleAim[3]={0};
 static  int gChainCodeAim[3]={0};
 /**********function claim************/
 void ParaUpdate(void);
@@ -264,7 +231,7 @@ uint8_t ReachToPoint(uint8_t error)
 uint8_t TrackByLine(coordinate_t startPoint,coordinate_t endPoint,uint8_t steps,uint8_t error)
 {
 	
-	static float paraT=0.f;
+	static double paraT=0.f;
 	gBaseCenterAim_t.x=paraT*(endPoint.x-startPoint.x)+startPoint.x;
 	gBaseCenterAim_t.y=paraT*(endPoint.y-startPoint.y)+startPoint.y;
 	gBaseCenterAim_t.z=paraT*(endPoint.z-startPoint.z)+startPoint.z;
@@ -285,10 +252,10 @@ uint8_t TrackByLine(coordinate_t startPoint,coordinate_t endPoint,uint8_t steps,
 uint8_t TrackByCircle(const coordinate_t startPoint,const coordinate_t endPoint,const uint8_t Round,const uint8_t PorNFlag,const uint8_t steps,const uint8_t error)
 {
 	
-	static float paraT=0.f;
-	float k=getK(startPoint,endPoint);
-	float distance=pow(Round,2)-(pow((startPoint.x-endPoint.x),2)+pow((startPoint.y-endPoint.y),2))/4;
-	float sitaStart=0.f,sitaEnd=0.f;
+	static double paraT=0.f;
+	double k=getK(startPoint,endPoint);
+	double distance=pow(Round,2)-(pow((startPoint.x-endPoint.x),2)+pow((startPoint.y-endPoint.y),2))/4;
+	double sitaStart=0.f,sitaEnd=0.f;
 	coordinate_t midPoint={(startPoint.x+endPoint.x)/2,(startPoint.y+endPoint.y)/2,0};
 	coordinate_t centerPoint={0.f,0.f,0.f};
 	k=-1/k;
@@ -376,7 +343,7 @@ uint8_t TrackByCircle(const coordinate_t startPoint,const coordinate_t endPoint,
 
 #ifdef DATAPOOL
 /************global variable  define**********/
-static float gChainAngleAim[3]={0};
+static double gChainAngleAim[3]={0};
 static  int gChainCodeAim[RECORDPOINT][3]={0};
 static uint16_t trackOrder[10]={0};
 static uint32_t countNum=0;
@@ -477,27 +444,27 @@ uint8_t DataInput(void)
 
 
 
-void Sprintf(float a,float b,float c,float d,float e,float f)
+void Sprintf(double a,double b,double c,double d,double e,double f)
 {
 	unsigned char buff[10];
 	sprintf((char*)buff,"%f",a);
-	USART_OUT(USART3,buff);
-	USART_OUT(USART3,(uint8_t *)"\t");
+	USART_OUT(UART5,buff);
+	USART_OUT(UART5,(uint8_t *)"\t");
 	sprintf((char*)buff,"%f",b);
-	USART_OUT(USART3,buff);
-	USART_OUT(USART3,(uint8_t *)"\t");
+	USART_OUT(UART5,buff);
+	USART_OUT(UART5,(uint8_t *)"\t");
 	sprintf((char*)buff,"%f",c);
-	USART_OUT(USART3,buff);
-	USART_OUT(USART3,(uint8_t *)"\t");
+	USART_OUT(UART5,buff);
+	USART_OUT(UART5,(uint8_t *)"\t");
 	sprintf((char*)buff,"%f",d);
-	USART_OUT(USART3,buff);
-	USART_OUT(USART3,(uint8_t *)"\t");
+	USART_OUT(UART5,buff);
+	USART_OUT(UART5,(uint8_t *)"\t");
 	sprintf((char*)buff,"%f",e);
-	USART_OUT(USART3,buff);
-	USART_OUT(USART3,(uint8_t *)"\t");
+	USART_OUT(UART5,buff);
+	USART_OUT(UART5,(uint8_t *)"\t");
 	sprintf((char*)buff,"%f",f);
-	USART_OUT(USART3,buff);
-	USART_OUT(USART3,(uint8_t *)"\r\n");
+	USART_OUT(UART5,buff);
+	USART_OUT(UART5,(uint8_t *)"\r\n");
 }
 
 

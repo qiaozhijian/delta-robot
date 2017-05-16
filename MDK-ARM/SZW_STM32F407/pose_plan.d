@@ -27,3 +27,4 @@
 .\szw_stm32f407\pose_plan.o: ..\Libraries\dsplib\Include\core_cm4.h
 .\szw_stm32f407\pose_plan.o: ..\Action_User\pose_plan.h
 .\szw_stm32f407\pose_plan.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+.\szw_stm32f407\pose_plan.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
