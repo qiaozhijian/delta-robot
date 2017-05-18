@@ -32,13 +32,11 @@ void init(void)
 	CAN_Config(CAN1,500,GPIOB,GPIO_Pin_8, GPIO_Pin_9);
 	#ifndef DEGUG
 	#ifndef DATAPOOL
+	#define START -200
 	elmo_Init();
-	Pos_cfg(1,5000,5000,100);
-	Pos_cfg(2,5000,5000,100);
-	Pos_cfg(3,5000,5000,100);
-	PosCrl(1,0,-100);
-	PosCrl(2,0,-100);
-	PosCrl(3,0,-100);
+	Vel_cfg(1,100000,100000);
+	Vel_cfg(2,100000,100000);
+	Vel_cfg(3,100000,100000);
 	//elmo_Disable(0);
 	#endif
 	#endif
@@ -57,6 +55,34 @@ int main(void)
 	}
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 //		static int aaa,bbb,ccc,order=0;

@@ -24,7 +24,7 @@
 //#define DATAPOOL
 
 /*跟随模式*/
-#define TRACK
+//#define TRACK
 
 /*debug模式是看delta各种参数之间的关系*/
 //#define DEGUG
@@ -35,6 +35,8 @@
 /*路径设计并跟随*/
 //#define ROUTEPLAN
 
+#define VELOCITY
+
 #define MASTERARM             198.f
 #define SLAVEARM              354.f
 //#define MASTERARM             150.f
@@ -42,10 +44,10 @@
 #define R                     182.f
 #define r                     45.f
 #define SQRT3                 1.73205f
-#define BASESTARTPOS          -500.1f		//未确定
+#define BASESTARTPOS          -200.1f		//未确定
 #define STARTANGLE            70.f
 #define RECORDPOINT           2000
-#define POOLSIZE              2000
+#define POOLSIZE              1
 /*
 三个轮子；编码器和姿态的对应是固定的
 109.41°时是-7，内正外负(旋转正方向)
@@ -54,26 +56,14 @@
 #define CODE(angle)  ((int)(-0.f-fabs(102.64f-angle)*4.8f))
 
 //控制最小误差
-#define ERROR(a,b,c)   ((__sqrtf(pow((a.x-b.x),2)+pow((a.y-b.y),2)+pow((a.z-b.z),2)))<c)
+#define ERROR(a,b,c)   ((__sqrtf(pow((a[0]-b[0]),2)+pow((a[1]-b[1]),2)+pow((a[2]-b[2]),2)))<c)
 //教学最小步调
-#define TOUCH(a,b,c)   ((__sqrtf(pow((a.x-b.x),2)+pow((a.y-b.y),2)+pow((a.z-b.z),2)))>c)
+#define TOUCH(a,b,c)   ((__sqrtf(pow((a[0]-b[0]),2)+pow((a[1]-b[1]),2)+pow((a[2]-b[2]),2)))>c)
 
 #define ZPLAN        -300
 /*******typedef**********/
-typedef  struct {
-	double x;
-	double y;
-	double z;
-}coordinate_t;
-
-typedef  struct {
-	double No1;
-	double No2;
-	double No3;
-}angle_t;
 
 typedef unsigned char     uint8_t;
-typedef coordinate_t* pcoordinate_t;
 
 #endif
 
