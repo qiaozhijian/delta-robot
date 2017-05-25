@@ -53,12 +53,20 @@
 109.41°时是-7，内正外负(旋转正方向)
 */
 #define ANGLE(code)  ((double)(102.64f-abs(0+code)*0.208333f))
-#define CODE(angle)  ((int)(-0.f-fabs(102.64f-angle)*4.8f))
+#define CODE(angle)  ((int)(-0.f-fabs(102.64f-angle)*4.8f+0.5f))
+#define CODEVEL(angle)  ((int)(angle*1728.f/360.f+0.5f))
 
 //控制最小误差
 #define ERROR(a,b,c)   ((__sqrtf(pow((a[0]-b[0]),2)+pow((a[1]-b[1]),2)+pow((a[2]-b[2]),2)))<c)
 //教学最小步调
 #define TOUCH(a,b,c)   ((__sqrtf(pow((a[0]-b[0]),2)+pow((a[1]-b[1]),2)+pow((a[2]-b[2]),2)))>c)
+
+/*求向量的二范数（模）*/
+#define Norm(vector) __sqrtf(vector[0] * vector[0] + vector[1] * vector[1] + vector[2] * vector[2])
+
+#define AIM(Aim1,Aim2,Aim3)  for(uint8_t i=0;i<3;i++){BaseCenterAim[0]=Aim1;BaseCenterAim[1]=Aim2;BaseCenterAim[2]=Aim3;}
+
+#define AIMINPUT(Aim1,Aim2,Aim3)  for(uint8_t i=0;i<3;i++){gBaseCenterAim[aimOrder][0]=Aim1;gBaseCenterAim[aimOrder][1]=Aim2;gBaseCenterAim[aimOrder][2]=Aim3;}
 
 #define ZPLAN        -300
 /*******typedef**********/

@@ -34,9 +34,9 @@ void init(void)
 	#ifndef DATAPOOL
 	#define START -200
 	elmo_Init();
-	Vel_cfg(1,100000,100000);
-	Vel_cfg(2,100000,100000);
-	Vel_cfg(3,100000,100000);
+	Vel_cfg(1,1000,1000);
+	Vel_cfg(2,1000,1000);
+	Vel_cfg(3,1000,1000);
 	//elmo_Disable(0);
 	#endif
 	#endif
@@ -51,7 +51,6 @@ int main(void)
 	//	USART_OUT(USART3,"DDD");
 		RouteControl();
 //		RouteOutput();
-		
 	}
 	}
 }

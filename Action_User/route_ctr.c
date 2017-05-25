@@ -2,7 +2,7 @@
 #include "stdio.h"
 #include "flash.h"
 /************global variable  define**********/
-static float gBaseCenter[3] = { 0,0,-340.1f };
+static float gBaseCenter[3] = { 0,0,-317.61f };
 static  int gChainCode[3] = { 0 ,0 ,0 };
 static  float gChainAngle[3] = { 45.f ,45.f ,45.f };
 static  int gChainVel[3] = { 0, 0 ,0 };
@@ -11,43 +11,108 @@ static  int gChainVel[3] = { 0, 0 ,0 };
 void Sprintf(float a,float b,float c,float d,float e,float f);
 #ifdef VELOCITY
 void ParaUpdate(void);
-uint8_t ReachToPoint(float baseCenterAim[3],float velocity);
+uint8_t KeyCatch(void);
+uint8_t ReachToPoint(float baseCenterAim[3],double velocity);
+static int aimOrder=0;
+static float gBaseCenterAim[55][3] = { 
+40,140,-350,
+40,140,-317.6,
+10,110,-317.6,
+10,110,-350,
+30,130,-350,
+30,130,-317.6,
+30,50,-317.6,
+30,50,-350,
+70,140,-350,
+70,140,-317.6,
+50,110,-317.6,
+50,110,-350,
+57,130,-350,
+57,130,-317.6,
+110,125,-317.6,
+110,125,-350,
+110,125,-317.6,
+100,110,-317.6,
+100,110,-350,
+85,115,-350,
+85,115,-317.6,
+85,50,-317.6,
+85,50,-350,
+85,50,-317.6,
+60,60,-317.6,
+70,90,-350,
+70,90,-317.6,
+60,80,-317.6,
+60,80,-350,
+100,90,-350,
+100,90,-317.6,
+110,80,-317.6,
+110,80,-350,	
+0,0,-500.0
+};
 void RouteControl(void)
 {
-	static float gBaseCenterAim[3] = { 0,0,-400 };
 	static uint8_t step=0;
+	static uint8_t status=1;
+	static uint8_t key=0;
+  uint8_t keyCatch;
+  static float BaseCenterAim[3] = { 0 };
 	ParaUpdate();
+	if(status==0)
+	{
+	keyCatch=KeyCatch();
+	if(keyCatch)
+	{
+		switch(key)
+		{
+			case 0:
+				elmo_Disable(0);
+				AIMINPUT(gBaseCenter[0],gBaseCenter[1],gBaseCenter[2]);
+				USART_OUT(UART5,(uint8_t*)"%d\t%d\t%d\r\n",(int)gBaseCenter[0],(int)gBaseCenter[1],(int)gBaseCenter[2]);
+				aimOrder++;
+				break;
+			case 1:
+				break;
+			case 2:
+				break;
+		}
+	
+	}
+	}
+	else
+	{
 	switch(step)
 	{
 		case 0:	
-			if(ReachToPoint(gBaseCenterAim,10)==1)
-				step++;
+			AIM(-(gBaseCenterAim[aimOrder][0]-125),gBaseCenterAim[aimOrder][1]-85,gBaseCenterAim[aimOrder][2]);
+			if(ReachToPoint(BaseCenterAim,70)==1)
+				aimOrder++;
 			break;
-		case 1:
-			break;
+	
 	//	Sprintf(gAngularVel[0],gAngularVel[1],gAngularVel[2],gChainCode[0]*1.0f,gChainCode[1],gChainCode[2]);
 	//USART_OUT(UART5,(uint8_t*)"%d\t%d\t%d\r\n",(int)fabs(gAngularVel[0]),(int)fabs(gAngularVel[1]),(int)fabs(gAngularVel[2]));
 	}
 	//VelocityUpdate(gBaseCenter,gAngularVel,gVelocity);
-	
 }
-#define PARAK   1
-uint8_t ReachToPoint(float baseCenterAim[3],float velocity)
+}
+#define PARAK   3.f
+uint8_t ReachToPoint(float baseCenterAim[3],double velocity)
 {
 	static float startToAim[3]={0};
 	static float startPoint[3]={0};
   float startToNow[3]={0};
 	float partVel[3]={0};
-	float Velocity[3]={0};
-	float distance=0.f;
+	double Velocity[3]={0};
 	static uint8_t flag=0;
-	
+	static float Distance=0.f;
+	//elmo_Disable(0);
 	if(flag==0)
 	{
 		flag=1;
 		for(uint8_t i=0;i<3;i++)
 		startToAim[i]=(baseCenterAim[i]-gBaseCenter[i]);
 		float norm=Norm(startToAim);
+		Distance=Norm(startToAim);
 		for(uint8_t i=0;i<3;i++)
 		startToAim[i]=startToAim[i]*velocity/norm;
 		for(uint8_t i=0;i<3;i++)
@@ -57,27 +122,48 @@ uint8_t ReachToPoint(float baseCenterAim[3],float velocity)
 	for(uint8_t i=0;i<3;i++)
 	startToNow[i]=(gBaseCenter[i]-startPoint[i]);	
 	
-	distance=Distance(startToAim,startPoint);
-	
 	GetPartVel(startToAim,startToNow,PARAK,partVel);
 	
 	for(uint8_t i=0;i<3;i++)
+	{
+		//if((gBaseCenter[2]-baseCenterAim[2])*(startPoint[2]-baseCenterAim[2])>0)
 	Velocity[i]=partVel[i]+startToAim[i];
-	
+//		else
+//	Velocity[i]=partVel[i]-startToAim[i];
+			
+	}
+	/*速度值会不断改变，Norm的值会随之改变，但是noom不会*/
+	static float nooom=0;
+	nooom=Norm(Velocity);
+	for(uint8_t i=0;i<3;i++)
+	Velocity[i]=Velocity[i]*velocity/nooom;
 	int AngularVel[3]={0};
 	AngularVelUpdate(gBaseCenter,Velocity,AngularVel);
-	
+	static float noom=0;
+	noom=Norm(AngularVel);
+	if(noom>150)
+	for(uint8_t i=0;i<3;i++)
+	AngularVel[i]=AngularVel[i]*150/noom;
+	/*观察者速度为正，向下
+	电机速度为负，向下转动*/
 		VelCrl(1,AngularVel[0]);
 		VelCrl(2,AngularVel[1]);
 		VelCrl(3,AngularVel[2]);
 
-	if(ERROR(gBaseCenter,baseCenterAim,1))
+	if(ERROR(gBaseCenter,baseCenterAim,1)||(Norm(startToNow)>Distance))
 	{
 		flag=0;
+		VelCrl(1,0);
+		VelCrl(2,0);
+		VelCrl(3,0);	
+	USART_OUT(UART5,(uint8_t*)"s\r\n");
 	return 1;
 	}
 	else
+	{
+	USART_OUT(UART5,(uint8_t*)"%d\t%d\t%d\r\n",(int)gBaseCenter[0],(int)gBaseCenter[1],(int)gBaseCenter[2]);
 	return 0;
+	}
 }
 #endif
 #ifdef TRACK
@@ -203,17 +289,17 @@ uint8_t	ReachToPoint(uint32_t pointToReach)
 
 
 #ifdef DEGUG
-static  float gAngularVel[3] = { 0, 0 ,0 };
-static  float gVelocity[3] = { 50, 0 ,0 };
+static  int gAngularVel[3] = { 0, 0 ,0 };
+static  double gVelocity[3] = { 0, 0 ,50 };
 void	ParaUpdate(void);	
 void RouteControl(void)
 {
 	
 	ParaUpdate();	
 	ChainUpdateByBase(gBaseCenter, gChainAngle);
-	BaseCenterUpdate(gChainAngle,&gBaseCenter);
+	BaseCenterUpdate(gChainAngle,gBaseCenter);
 	AngularVelUpdate(gBaseCenter,gVelocity,gAngularVel);
-	VelocityUpdate(gBaseCenter,gAngularVel,gVelocity);
+//	VelocityUpdate(gBaseCenter,gAngularVel,gVelocity);
 }
 #endif
 
@@ -270,7 +356,6 @@ uint8_t ReachToPoint(uint8_t error)
 	if(ERROR(gBaseCenter,gBaseCenterAim,error))
 	{
 	Sprintf(gBaseCenterAim[0],gBaseCenterAim[1],gBaseCenterAim[2],gBaseCenter[0],gBaseCenter[1],gBaseCenter[2]);
-	//USART_OUT(UART5,(uint8_t*)"%d\t%d\t%d\r\n",gChainCode[0],gChainCode[1],gChainCode[2]);
 	return 1;
 	}
 	else
@@ -541,22 +626,22 @@ void Sprintf(float a,float b,float c,float d,float e,float f)
 	unsigned char buff[10];
 	sprintf((char*)buff,"%f",a);
 	USART_OUT(UART5,buff);
-//	USART_OUT(UART5,(uint8_t *)"\t");
-//	sprintf((char*)buff,"%f",b);
-//	USART_OUT(UART5,buff);
-//	USART_OUT(UART5,(uint8_t *)"\t");
-//	sprintf((char*)buff,"%f",c);
-//	USART_OUT(UART5,buff);
 	USART_OUT(UART5,(uint8_t *)"\t");
-	sprintf((char*)buff,"%f\r\n",d);
+	sprintf((char*)buff,"%f",b);
 	USART_OUT(UART5,buff);
+	USART_OUT(UART5,(uint8_t *)"\t");
+	sprintf((char*)buff,"%f",c);
+	USART_OUT(UART5,buff);
+//	USART_OUT(UART5,(uint8_t *)"\t");
+//	sprintf((char*)buff,"%f\r\n",d);
+//	USART_OUT(UART5,buff);
 //	USART_OUT(UART5,(uint8_t *)"\t");
 //	sprintf((char*)buff,"%f",e);
 //	USART_OUT(UART5,buff);
 //	USART_OUT(UART5,(uint8_t *)"\t");
 //	sprintf((char*)buff,"%f",f);
 //	USART_OUT(UART5,buff);
-//	USART_OUT(UART5,(uint8_t *)"\r\n");
+	USART_OUT(UART5,(uint8_t *)"\r\n");
 }
 
 
