@@ -52,8 +52,8 @@
 三个轮子；编码器和姿态的对应是固定的
 109.41°时是-7，内正外负(旋转正方向)
 */
-#define ANGLE(code)  ((double)(102.64f-abs(0+code)*0.208333f))
-#define CODE(angle)  ((int)(-0.f-fabs(102.64f-angle)*4.8f+0.5f))
+#define ANGLE(code)  ((double)(104.04f-abs(0+code)*0.208333f))
+#define CODE(angle)  ((int)(-0.f-fabs(104.04f-angle)*4.8f+0.5f))
 #define CODEVEL(angle)  ((int)(angle*1728.f/360.f+0.5f))
 
 //控制最小误差

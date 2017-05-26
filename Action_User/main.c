@@ -30,16 +30,10 @@ void init(void)
 	KeyInit();//°´×¡Îª1
 	Flash_Init();
 	CAN_Config(CAN1,500,GPIOB,GPIO_Pin_8, GPIO_Pin_9);
-	#ifndef DEGUG
-	#ifndef DATAPOOL
-	#define START -200
 	elmo_Init();
 	Vel_cfg(1,1000,1000);
 	Vel_cfg(2,1000,1000);
 	Vel_cfg(3,1000,1000);
-	//elmo_Disable(0);
-	#endif
-	#endif
 }
 int main(void)
 {
