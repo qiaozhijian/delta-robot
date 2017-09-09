@@ -27,7 +27,7 @@
 //#define TRACK
 
 /*debug模式是看delta各种参数之间的关系*/
-//#define DEGUG
+//#define DEBUG
 
 /*这是走到任意一个点*/
 //#define TRYPOINT

@@ -17,6 +17,7 @@
 #include "stdio.h"
 #include "arm_math.h"
 #include "flash.h"
+#include "config.h"
 
 void init(void)
 {
@@ -31,9 +32,11 @@ void init(void)
 	Flash_Init();
 	CAN_Config(CAN1,500,GPIOB,GPIO_Pin_8, GPIO_Pin_9);
 	elmo_Init();
+	#ifndef DEBUG
 	Vel_cfg(1,1000,1000);
 	Vel_cfg(2,1000,1000);
 	Vel_cfg(3,1000,1000);
+	#endif
 }
 int main(void)
 {
