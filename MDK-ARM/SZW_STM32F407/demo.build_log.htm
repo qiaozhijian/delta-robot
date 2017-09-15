@@ -3,45 +3,45 @@
 <pre>
 <h1>µVision Build Log</h1>
 <h2>Tool Versions:</h2>
-IDE-Version: ¦ÌVision V5.24.2.0
-Copyright (C) 2017 ARM Ltd and ARM Germany GmbH. All rights reserved.
-License Information: 123 Windows, HP Inc., LIC=UJWQD-8FAZU-8TL3P-MQ3L1-QQ66P-UP0ZU
+IDE-Version: ¦ÌVision V5.14.0.0
+Copyright (C) 2015 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: 123 Windows, HP Inc., LIC=ZB4HL-0UGQ3-30BNC-77U3B-DSA4R-Q9YXR
  
 Tool Versions:
-Toolchain:       MDK-ARM Plus  Version: 5.24.1
+Toolchain:       MDK-ARM Standard  Version: 5.14.0.0
 Toolchain Path:  D:\Keil_v5\ARM\ARMCC\Bin
-C Compiler:      Armcc.exe V5.06 update 5 (build 528)
-Assembler:       Armasm.exe V5.06 update 5 (build 528)
-Linker/Locator:  ArmLink.exe V5.06 update 5 (build 528)
-Library Manager: ArmAr.exe V5.06 update 5 (build 528)
-Hex Converter:   FromElf.exe V5.06 update 5 (build 528)
-CPU DLL:         SARMCM3.DLL V5.24.1
-Dialog DLL:      DCM.DLL V1.16.0.0
-Target DLL:      Segger\JL2CM3.dll V2.99.23.0
-Dialog DLL:      TCM.DLL V1.32.0.0
+C Compiler:      Armcc.exe V5.05 update 1 (build 106)
+Assembler:       Armasm.exe V5.05 update 1 (build 106)
+Linker/Locator:  ArmLink.exe V5.05 update 1 (build 106)
+Library Manager: ArmAr.exe V5.05 update 1 (build 106)
+Hex Converter:   FromElf.exe V5.05 update 1 (build 106)
+CPU DLL:         SARMCM3.DLL V5.14.0.0
+Dialog DLL:      DCM.DLL V1.13.1.0
+Target DLL:      Segger\JL2CM3.dll V2.99.13.0
+Dialog DLL:      TCM.DLL V1.14.4.0
  
 <h2>Project:</h2>
 F:\grow\git\delta\MDK-ARM\demo.uvprojx
-Project File Date:  09/08/2017
+Project File Date:  09/14/2017
 
 <h2>Output:</h2>
-*** Using Compiler 'V5.06 update 5 (build 528)', folder: 'D:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'ACTION'
-".\SZW_STM32F407\demo.axf" - 0 Error(s), 0 Warning(s).
-
-<h2>Software Packages used:</h2>
-
-Package Vendor: Keil
-                http://www.keil.com/pack/Keil.STM32F4xx_DFP.2.11.0.pack
-                Keil.STM32F4xx_DFP.2.11.0
-                STMicroelectronics STM32F4 Series Device Support, Drivers and Examples
+compiling route_ctr.c...
+..\Action_User\route_ctr.c(211): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+                        if(gBaseCenterAim[aimOrder+1][2]>=449.5)
+..\Action_User\route_ctr.c(8): warning:  #550-D: variable "gChainVel" was set but never used
+  static  int gChainVel[3] = { 0, 0 ,0 };
+..\Action_User\route_ctr.c: 2 warnings, 0 errors
+linking...
+Program Size: Code=26220 RO-data=3268 RW-data=1556 ZI-data=18132  
+FromELF: creating hex file...
+".\SZW_STM32F407\demo.axf" - 0 Error(s), 2 Warning(s).
 
 <h2>Collection of Component include folders:</h2>
-  .\RTE\_ACTION
-  D:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.11.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include
+  F:\grow\git\delta\MDK-ARM\RTE
+  D:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.11.0
 
 <h2>Collection of Component Files used:</h2>
-Build Time Elapsed:  00:00:01
 </pre>
 </body>
 </html>
