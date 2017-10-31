@@ -34,15 +34,15 @@ static float gBaseCenterAim[121][3] = {
 29.843,52.679,-475,
 29.843,52.679,-448.5,
 52.859,52.379,-448.5,
-46.559,52.379,-454.5,
-46.459,52.379,-448.0,
-48.459,33.819,-448.0,
-48.499,31.134,-448.0,
-47.066,29.230,-448.0,
-43.368,28.026,-448.0,
-41.571,27.947,-448.0,
-35.418,28.966,-448.0,
-37.571,29.047,-454,
+50.559,52.379,-454.5,
+50.459,52.379,-448.0,
+52.459,33.819,-448.0,
+52.499,31.134,-448.0,
+51.066,29.230,-448.0,
+47.368,28.026,-448.0,
+45.571,27.947,-448.0,
+39.418,28.966,-448.0,
+41.571,29.047,-454,
 
 28.860,52.410,-475,
 28.860,52.410,-448.5,
@@ -199,14 +199,15 @@ void RouteControl(void)
 			}
 			else
 			{
+				/*进行坐标偏移*/
 				float a,b=0.f;
 				float x,y=0.f;
-				float xita=4.f/180.f*3.14f;
+				float xita=3.f/180.f*3.14f;
 				a=-gBaseCenterAim[aimOrder][0]+80;
 				b=gBaseCenterAim[aimOrder][1]-30;
 				x=a*cos(xita)+b*sin(xita);
 				y=-a*sin(xita)+b*cos(xita);
-				AIM(x,y,gBaseCenterAim[aimOrder][2]);
+				AIM(x,y,gBaseCenterAim[aimOrder][2]+1);
 			}
 			int i=0;
 			if(gBaseCenterAim[aimOrder+1][2]>=449.5)
@@ -224,7 +225,7 @@ void RouteControl(void)
 	//VelocityUpdate(gBaseCenter,gAngularVel,gVelocity);
 }
 }
-#define PARAK   1.2f
+#define PARAK   1.0f
 uint8_t ReachToPoint(float baseCenterAim[3],double velocity,int i)
 {
 	static float startToAim[3]={0};
@@ -239,20 +240,22 @@ uint8_t ReachToPoint(float baseCenterAim[3],double velocity,int i)
 	{
 		flag=1;
 		for(uint8_t i=0;i<3;i++)
-		startToAim[i]=(baseCenterAim[i]-gBaseCenter[i]);
+			startToAim[i]=(baseCenterAim[i]-gBaseCenter[i]);
 		float norm=Norm(startToAim);
-		Distance=Norm(startToAim);
+			Distance=Norm(startToAim);
 		for(uint8_t i=0;i<3;i++)
-		startToAim[i]=startToAim[i]*velocity/norm;
+			startToAim[i]=startToAim[i]*velocity/norm;
 		for(uint8_t i=0;i<3;i++)
-		startPoint[i]=gBaseCenter[i];
+			startPoint[i]=gBaseCenter[i];
 	}
-	
+	/*目前点到初始点的距离*/
 	for(uint8_t i=0;i<3;i++)
-	startToNow[i]=(gBaseCenter[i]-startPoint[i]);	
+		startToNow[i]=(gBaseCenter[i]-startPoint[i]);	
 	
+	/*求解靠近目标向量的偏移量*/
 	GetPartVel(startToAim,startToNow,PARAK,partVel);
 	
+	/*靠近目标向量的偏移量加上出发点到目标点的向量*/
 	for(uint8_t i=0;i<3;i++)
 	{
 		//if((gBaseCenter[2]-baseCenterAim[2])*(startPoint[2]-baseCenterAim[2])>0)
@@ -261,22 +264,27 @@ uint8_t ReachToPoint(float baseCenterAim[3],double velocity,int i)
 //	Velocity[i]=partVel[i]-startToAim[i];
 			
 	}
-	
+	/*如果i为1，越靠近终点速度越慢*/
 	if(i)
 	velocity*=1-Norm(startToNow)/Distance;
 	
 	/*速度值会不断改变，Norm的值会随之改变，但是noom不会*/
 	static float nooom=0;
 	nooom=Norm(Velocity);
+	/*使速度永远保持不变*/
 	for(uint8_t i=0;i<3;i++)
-	Velocity[i]=Velocity[i]*velocity/nooom;
+		Velocity[i]=Velocity[i]*velocity/nooom;
+	/*得到相应的角速度，单位是脉冲*/
 	int AngularVel[3]={0};
 	AngularVelUpdate(gBaseCenter,Velocity,AngularVel);
 	static float noom=0;
 	noom=Norm(AngularVel);
+	/*给角速度设置阈值*/
 	if(noom>150)
+	{
 	for(uint8_t i=0;i<3;i++)
-	AngularVel[i]=AngularVel[i]*150/noom;
+		AngularVel[i]=AngularVel[i]*150/noom;
+	}
 	/*观察者速度为正，向下
 	电机速度为负，向下转动*/
 		VelCrl(1,AngularVel[0]);
