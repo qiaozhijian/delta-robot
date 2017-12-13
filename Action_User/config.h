@@ -23,19 +23,10 @@
 /********define**********/
 //#define DATAPOOL
 
-/*跟随模式*/
-//#define TRACK
-
 /*debug模式是看delta各种参数之间的关系*/
-//#define DEBUG
+#define DEBUG
 
-/*这是走到任意一个点*/
-//#define TRYPOINT
-
-/*路径设计并跟随*/
-//#define ROUTEPLAN
-
-#define VELOCITY
+//#define VELOCITY
 
 #define MASTERARM             198.f
 #define SLAVEARM              354.f
@@ -63,8 +54,6 @@
 
 /*求向量的二范数（模）*/
 #define Norm(vector) __sqrtf(vector[0] * vector[0] + vector[1] * vector[1] + vector[2] * vector[2])
-
-#define AIM(Aim1,Aim2,Aim3)  for(uint8_t i=0;i<3;i++){BaseCenterAim[0]=Aim1;BaseCenterAim[1]=Aim2;BaseCenterAim[2]=Aim3;}
 
 #define AIMINPUT(Aim1,Aim2,Aim3)  for(uint8_t i=0;i<3;i++){gBaseCenterAim[aimOrder][0]=Aim1;gBaseCenterAim[aimOrder][1]=Aim2;gBaseCenterAim[aimOrder][2]=Aim3;}
 

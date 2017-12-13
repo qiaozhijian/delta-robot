@@ -31,7 +31,7 @@ void init(void)
 	KeyInit();//°´×¡Îª1
 	Flash_Init();
 	CAN_Config(CAN1,500,GPIOB,GPIO_Pin_8, GPIO_Pin_9);
-	elmo_Init();
+	//elmo_Init();
 	#ifndef DEBUG
 	Vel_cfg(1,1000,1000);
 	Vel_cfg(2,1000,1000);
