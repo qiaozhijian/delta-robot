@@ -24,9 +24,9 @@
 //#define DATAPOOL
 
 /*debug模式是看delta各种参数之间的关系*/
-#define DEBUG
+//#define DEBUG
 
-//#define VELOCITY
+#define VELOCITY
 
 #define MASTERARM             198.f
 #define SLAVEARM              354.f

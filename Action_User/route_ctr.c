@@ -77,7 +77,6 @@ static float gBaseCenterAim[][3] = {
 70.253,7.095,-446.5,
 67.054,6.177,-446.5,
 62.184,12.177,-446.5,
--6.f,-6.f,-6.f,
 62.184,12.177,-484,
 
 /**ÐÂ**/
@@ -118,7 +117,6 @@ static float gBaseCenterAim[][3] = {
 98.738,6.459,-447.5,
 97.072,5.793,-447.5,
 92.274,10.859,-447.5,
--6.f,-6.f,-6.f,
 92.274,10.859,-451.5,
 
 94.084,28.061,-475,
@@ -159,8 +157,8 @@ static float gBaseCenterAim[][3] = {
 133.396,49.437,-448.5,
 133.398,3.160,-447.5,
 133.396,10.437,-454,
-133.396,10.437,-470
-
+133.396,10.437,-470,
+0.0,0.0,0.0
 };
 void RouteControl(void)
 {
@@ -174,17 +172,13 @@ void RouteControl(void)
 	switch(step)
 	{
 		case 0:	
-			if(gBaseCenterAim[aimOrder][2]==-0.f)
-			{		
+			if(gBaseCenterAim[aimOrder][2]>=-5)
 				aimOrder=0;
-			}
-			else if(gBaseCenterAim[aimOrder][2]==-6.f&&gBaseCenterAim[aimOrder][0]==-6.f)
-			{		
-				VelCrl(1,0);
-				VelCrl(2,0);
-				VelCrl(3,0);	
-				delay_ms(100);
-				aimOrder++;
+			if(gBaseCenterAim[aimOrder][2]>=-5)
+			{
+				BaseCenterAim[0]=0.0;
+				BaseCenterAim[1]=0.0;
+				BaseCenterAim[2]=-480;
 			}
 			else
 			{
@@ -209,6 +203,12 @@ void RouteControl(void)
 			}
 			break;
 	}
+		USART_OUT_F(aimOrder);
+	for(int i=0;i<3;i++)
+		USART_OUT_F(gBaseCenter[i]);
+	for(int i=0;i<3;i++)
+		USART_OUT_F(gBaseCenterAim[aimOrder][i]);
+	USART_Enter();
 }
 #define PARAK   1.0f
 uint8_t ReachToPoint(float baseCenterAim[3],double velocity)
@@ -286,8 +286,7 @@ uint8_t ReachToPoint(float baseCenterAim[3],double velocity)
 	}
 	else
 	{
-	USART_OUT(UART5,(uint8_t*)"%d\t%d\t%d\r\n",(int)gBaseCenter[0],(int)gBaseCenter[1],(int)gBaseCenter[2]);
-	return 0;
+		return 0;
 	}
 }
 #endif

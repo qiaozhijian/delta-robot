@@ -11,6 +11,7 @@ void USART_OUT(USART_TypeDef* USARTx,const uint8_t *Data,...);
 char *itoa(int value, char *string, int radix);
 void setAngle(float val);
 float getAngle(void);
-
+void USART_OUT_F(float value);
+void USART_Enter(void);
 #endif
 

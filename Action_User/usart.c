@@ -16,7 +16,19 @@
   * @retval None
   */
 
-
+void USART_OUT_F(float value)
+{
+  char s[9]={0};
+  int integer=( int )value;
+	if(value<0.f&&value>-1.f)
+		sprintf( (char*)s, "-%d.%01d\t", ( int )value, (unsigned int)((fabs(value) - abs(integer))  * 10));
+	else
+		sprintf( (char*)s, "%d.%01d\t", ( int )value, (unsigned int)((fabs(value) - abs(integer))  * 10));
+  USART_OUT(UART5,s);
+}
+void USART_Enter(void){
+  USART_OUT(UART5,"\r\n");
+}
 
 void USART1_Init(uint32_t BaudRate)
 {
