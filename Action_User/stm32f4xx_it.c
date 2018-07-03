@@ -201,7 +201,7 @@ void TIM4_IRQHandler(void)
 		TIM_ClearITPendingBit(TIM4, TIM_IT_Update);
 	}
 }
-
+extern Robot_t gRobot;
 #define NUM_NUM	32
 void UART5_IRQHandler(void)
 {
@@ -262,19 +262,24 @@ void UART5_IRQHandler(void)
 			 case 4:
 				 if(ch==0x0d)
 				 {
-
-				 break;
-			 
+					 gRobot.isUsePPS=1;
+					 gRobot.pps.angleX=posture.ActVal[0];
+					 gRobot.pps.angleY=posture.ActVal[1];
+					 gRobot.pps.angleZ=posture.ActVal[2];
+					 gRobot.pps.x=posture.ActVal[3];
+					 gRobot.pps.y=posture.ActVal[4];
+						break;
+				 }
 			 default:
 				 count=0;
 			   break;		 
-		 }
+		 
 	 }
  }
 	else
 	{
 		USART_ReceiveData(UART5);
-	}
+  }
 }
 
 

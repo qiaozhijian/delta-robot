@@ -32,6 +32,7 @@ void WriteChuangXin(void);
 /********function export*********/
 void RouteControl(void);
 uint8_t KeyCatch(void);
+void FollowPPS(void);
 #endif
 
 /******************* (C) COPYRIGHT 2015 ACTION *****END OF FILE****/

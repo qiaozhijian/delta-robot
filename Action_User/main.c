@@ -19,6 +19,7 @@
 #include "flash.h"
 #include "config.h"
 
+Robot_t gRobot={0};
 void init(void)
 {
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);	
@@ -45,9 +46,12 @@ int main(void)
 	{
 		while(getTimeFlag())
 		{
-
-			WriteChuangXin();
-
+//			DebugMode();
+//			if(!gRobot.isUsePPS)
+//				WriteChuangXin();
+//			else
+				FollowPPS();
+		
 		}
 	}
 }

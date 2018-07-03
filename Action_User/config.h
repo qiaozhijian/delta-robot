@@ -62,6 +62,27 @@
 
 typedef unsigned char     uint8_t;
 
+	
+	
+typedef struct{
+	
+	
+	struct{
+		float x;
+		float y;
+		float angleX;
+		float angleY;
+		float angleZ;
+	}pps;
+	
+	int isUsePPS;
+}Robot_t;
+	
+	
+	
+	
+	
+
 #endif
 
 	

@@ -289,7 +289,60 @@ uint8_t ReachToPoint(float baseCenterAim[3],double velocity)
 	}
 }
 
+extern Robot_t gRobot;
+int isUsexy=0;
+int IsUseXY(void)
+{
+	static float xLast=0.f;
+	static float yLast=0.f;
+	static int cnt=0;
+	
+	if(fabs(gRobot.pps.x-xLast)<2.f&&fabs(gRobot.pps.y-yLast)<2.f)
+		cnt=0;
+	else 
+		cnt++;
+	
+	if(cnt>200)
+		isUsexy=1;
+	else
+		isUsexy=0;
+	
+	xLast=gRobot.pps.x;
+	yLast=gRobot.pps.y;
+}
 
+#define XLIMIT	75.f
+#define YLIMIT	75.f
+void FollowPPS(void)
+{  
+	static float BaseCenterAim[3] = { 0 };
+	ParaUpdate();
+	//使用坐标
+	if(isUsexy)
+	{
+		
+	}
+	//不使用坐标
+	else
+	{
+		BaseCenterAim[0]=0.f;
+		
+		if(gRobot.pps.angleX<-XLIMIT)
+			gRobot.pps.angleX=-XLIMIT;
+		else if(gRobot.pps.angleX>XLIMIT)
+			gRobot.pps.angleX=XLIMIT;
+		BaseCenterAim[1]=gRobot.pps.angleX/XLIMIT*150.f;
+		
+		if(gRobot.pps.angleY<-YLIMIT)
+			gRobot.pps.angleY=-YLIMIT;
+		else if(gRobot.pps.angleY>YLIMIT)
+			gRobot.pps.angleY=YLIMIT;
+		BaseCenterAim[2]=-(gRobot.pps.angleY/YLIMIT*50.f+350.f);
+		
+		
+		ReachToPoint(BaseCenterAim,200);
+	}
+}
 
 
 static  int gAngularVel[3] = { 0, 0 ,0 };
@@ -298,11 +351,15 @@ static  double gVelocity[3] = { 0, 0 ,70 };
 void DebugMode(void)
 {
 	
-	//ParaUpdate();	
-	//elmo_Disable(0);
+	ParaUpdate();	
+	elmo_Disable(0);
+	USART_OUT_F(gBaseCenter[0]);
+	USART_OUT_F(gBaseCenter[1]);
+	USART_OUT_F(gBaseCenter[2]);
+	USART_Enter();
 //	ChainUpdateByBase(gBaseCenter, gChainAngle);
 	//BaseCenterUpdate(gChainAngle,gBaseCenter);
-	AngularVelUpdate(gBaseCenter,gVelocity,gAngularVel);
+//	AngularVelUpdate(gBaseCenter,gVelocity,gAngularVel);
 //	VelocityUpdate(gBaseCenter,gAngularVel,gVelocity);
 }
 
