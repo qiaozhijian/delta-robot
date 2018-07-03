@@ -217,7 +217,8 @@ void UART5_IRQHandler(void)
 	if(USART_GetITStatus(UART5, USART_IT_RXNE)==SET)   
 	{
 		USART_ClearITPendingBit(UART5,USART_IT_RXNE);
-		ch=USART_ReceiveData(UART5);		
+		ch=USART_ReceiveData(UART5);	
+//USART_SendData(UART5,ch);		
 		 switch(count)
 		 {
 			 case 0:
@@ -262,7 +263,13 @@ void UART5_IRQHandler(void)
 			 case 4:
 				 if(ch==0x0d)
 				 {
-					 gRobot.isUsePPS=1;
+					 if(!gRobot.isUsePPS)
+					 {
+//						 	Pos_cfg(1,5000,5000,100);
+//							Pos_cfg(2,5000,5000,100);
+//							Pos_cfg(3,5000,5000,100);
+							gRobot.isUsePPS=1;
+					 }
 					 gRobot.pps.angleX=posture.ActVal[0];
 					 gRobot.pps.angleY=posture.ActVal[1];
 					 gRobot.pps.angleZ=posture.ActVal[2];

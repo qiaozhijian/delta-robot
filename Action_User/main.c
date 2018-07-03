@@ -28,16 +28,21 @@ void init(void)
 	
 	UART5_Init(115200);		//调试用蓝牙
 	
-	USART3_Init(115200);
 	KeyInit();//按住为1
 	Flash_Init();
 	CAN_Config(CAN1,500,GPIOB,GPIO_Pin_8, GPIO_Pin_9);
 	elmo_Init();
 	#ifndef DEBUG
-	Vel_cfg(1,1000,1000);
-	Vel_cfg(2,1000,1000);
-	Vel_cfg(3,1000,1000);
+//	Vel_cfg(1,1000,1000);
+//	Vel_cfg(2,1000,1000);
+//	Vel_cfg(3,1000,1000);
 	#endif
+	Pos_cfg(1,5000,5000,1000);
+	Pos_cfg(2,5000,5000,1000);
+	Pos_cfg(3,5000,5000,1000);
+//		PosCrl(1,0,-250);
+//		PosCrl(2,0,-250);
+//		PosCrl(3,0,-250);
 }
 int main(void)
 {
@@ -49,7 +54,7 @@ int main(void)
 //			DebugMode();
 //			if(!gRobot.isUsePPS)
 //				WriteChuangXin();
-//			else
+////			else
 				FollowPPS();
 		
 		}

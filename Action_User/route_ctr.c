@@ -316,6 +316,7 @@ int IsUseXY(void)
 void FollowPPS(void)
 {  
 	static float BaseCenterAim[3] = { 0 };
+	float ChainAngle[3]={0.f};
 	ParaUpdate();
 	//Ê¹ÓÃ×ø±ê
 	if(isUsexy)
@@ -331,16 +332,24 @@ void FollowPPS(void)
 			gRobot.pps.angleX=-XLIMIT;
 		else if(gRobot.pps.angleX>XLIMIT)
 			gRobot.pps.angleX=XLIMIT;
-		BaseCenterAim[1]=gRobot.pps.angleX/XLIMIT*150.f;
+		BaseCenterAim[1]=-gRobot.pps.angleX/XLIMIT*150.f;
 		
 		if(gRobot.pps.angleY<-YLIMIT)
 			gRobot.pps.angleY=-YLIMIT;
 		else if(gRobot.pps.angleY>YLIMIT)
 			gRobot.pps.angleY=YLIMIT;
-		BaseCenterAim[2]=-(gRobot.pps.angleY/YLIMIT*50.f+350.f);
+		BaseCenterAim[2]=-(gRobot.pps.angleY/YLIMIT*60.f+360.f);
+		
+		ChainUpdateByBase(BaseCenterAim,ChainAngle);
+		gChainCode[0]=CODE(ChainAngle[0]);
+		gChainCode[1]=CODE(ChainAngle[1]);
+		gChainCode[2]=CODE(ChainAngle[2]);
 		
 		
-		ReachToPoint(BaseCenterAim,200);
+		PosCrl(1,0,gChainCode[0]);
+		PosCrl(2,0,gChainCode[1]);
+		PosCrl(3,0,gChainCode[2]);
+//		ReachToPoint(BaseCenterAim,200);
 	}
 }
 
