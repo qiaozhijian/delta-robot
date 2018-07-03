@@ -9,14 +9,15 @@ static  int gChainVel[3] = { 0, 0 ,0 };
 
 /**********function claim************/
 void Sprintf(float a,float b,float c,float d,float e,float f);
-#ifdef VELOCITY
+
+
 void ParaUpdate(void);
 uint8_t KeyCatch(void);
 uint8_t ReachToPoint(float baseCenterAim[3],double velocity);
 static int aimOrder=0;
 static float gBaseCenterAim[][3] = { 
 /**创**/
-39.901,85.113,-475,
+39.901,85.113,-448.0,
 39.901,85.113,-447.5,
 38.295,80.296,-447.5,
 36.444,75.099,-447.5,
@@ -26,12 +27,12 @@ static float gBaseCenterAim[][3] = {
 22.732,51.108,-447.5,
 26.323,56.024,-454,
 	
-38.287,80.295,-475,
+38.287,80.295,-448.0,
 38.287,80.295,-447.5,
 54.244,54.687,-447.5,
 38.287,80.295,-454,
 
-29.843,52.679,-475,
+29.843,52.679,-448.0,
 29.843,52.679,-448.5,
 50.859,52.079,-448.5,
 //50.559,52.379,-454.5,
@@ -46,7 +47,7 @@ static float gBaseCenterAim[][3] = {
 39.418,28.966,-448.0,
 41.571,29.047,-454,
 
-28.860,52.410,-475,
+28.860,52.410,-448.0,
 28.860,52.410,-448.5,
 30.910,13.155,-448.5,
 31.910,10.037,-448.5,
@@ -64,12 +65,12 @@ static float gBaseCenterAim[][3] = {
 55.966,24.005,-454,
 
 
-60.443,75.434,-475,
+60.443,75.434,-448.0,
 60.443,75.434,-448.5,
 60.443,24.203,-447.5,
 61.443,50.434,-454,
 
-72.895,84.087,-475,
+72.895,84.087,-448.0,
 72.895,84.087,-448.5,
 72.948,16.750,-447.5,
 72.889,13.018,-446.5,
@@ -80,37 +81,37 @@ static float gBaseCenterAim[][3] = {
 62.184,12.177,-484,
 
 /**新**/
-99.180,84.991,-475,
+99.180,84.991,-448.0,
 99.180,84.991,-448.5,
 102.956,72.196,-447.5,
 99.180,84.991,-454,
 
-88.118,72.152,-475,
+88.118,72.152,-448.0,
 88.118,72.152,-448.5,
 116.781,72.181,-447.5,
 100,72.152,-454,
 
-92.451,67.169,-475,
+92.451,67.169,-448.0,
 92.451,67.169,-448.5,
 96.963,56.155,-447.5,
 92.451,67.169,-454,
 
-109.893,67.285,-475,
+109.893,67.285,-448.0,
 109.893,67.285,-448.5,
 104.155,52.031,-447.5,
 109.893,67.285,-454,
 
-86.691,51.989,-475,
+86.691,51.989,-448.0,
 86.691,51.989,-448.5,
 115.199,52.049,-447.5,
 100.691,51.989,-454,
 
-86.091,36.158,-475,
+86.091,36.158,-448.0,
 86.091,36.158,-448.5,
 114.442,36.158,-447.5,
 100.091,36.158,-454,
 
-101.203,48.508,-475,
+101.203,48.508,-448.0,
 101.203,48.508,-448.5,
 101.186,13.456,-447.5,
 100.070,9.458,-447.5,
@@ -119,24 +120,24 @@ static float gBaseCenterAim[][3] = {
 92.274,10.859,-447.5,
 92.274,10.859,-451.5,
 
-94.084,28.061,-475,
+94.084,28.061,-448.0,
 94.084,28.061,-448.5,
 86.421,12.934,-448.5,
 94.084,28.061,-454,
 
-106.679,27.994,-475,
+106.679,27.994,-448.0,
 106.679,27.994,-448.5,
 113.609,15.800,-448.5,
 106.679,27.994,-454,
 
-139.831,78.883,-475,
+139.831,78.883,-448.0,
 139.831,78.883,-448.5,
 134.545,77.194,-448.5,
 127.703,75.995,-448.5,
 120.151,75.106,-448.5,
 120.151,75.106,-454,
 
-120.077,75.208,-475,
+120.077,75.208,-448.0,
 120.077,75.208,-448.5,
 120.112,49.367,-448,
 120.167,43.395,-448,
@@ -148,19 +149,19 @@ static float gBaseCenterAim[][3] = {
 112.709,3.657,-446,
 116.263,11.965,-454,
 
-120.109,49.000,-475,
+120.109,49.000,-448.0,
 120.109,49.000,-448.5,
 143.805,50.440,-447.5,
 130.109,49.000,-454,
 
-133.396,49.437,-475,
+133.396,49.437,-448.0,
 133.396,49.437,-448.5,
 133.398,3.160,-447.5,
 133.396,10.437,-454,
 133.396,10.437,-470,
 0.0,0.0,0.0
 };
-void RouteControl(void)
+void WriteChuangXin(void)
 {
 	static uint8_t step=0;
 	static uint8_t status=1;
@@ -198,7 +199,7 @@ void RouteControl(void)
 				}
 			}
 
-			if(ReachToPoint(BaseCenterAim,70)==1&&gBaseCenterAim[aimOrder][2]!=-530){
+			if(ReachToPoint(BaseCenterAim,200)==1&&gBaseCenterAim[aimOrder][2]!=-530){
 				aimOrder++;
 			}
 			break;
@@ -210,7 +211,7 @@ void RouteControl(void)
 		USART_OUT_F(gBaseCenterAim[aimOrder][i]);
 	USART_Enter();
 }
-#define PARAK   1.0f
+#define PARAK   1.2f
 uint8_t ReachToPoint(float baseCenterAim[3],double velocity)
 {
 	static float startToAim[3]={0};
@@ -220,7 +221,6 @@ uint8_t ReachToPoint(float baseCenterAim[3],double velocity)
 	double Velocity[3]={0};
 	static uint8_t flag=0;
 	static float Distance=0.f;
-	//elmo_Disable(0);
 	if(flag==0)
 	{
 		flag=1;
@@ -281,7 +281,6 @@ uint8_t ReachToPoint(float baseCenterAim[3],double velocity)
 		VelCrl(1,0);
 		VelCrl(2,0);
 		VelCrl(3,0);	
-	USART_OUT(UART5,(uint8_t*)"s\r\n");
 	return 1;
 	}
 	else
@@ -289,15 +288,14 @@ uint8_t ReachToPoint(float baseCenterAim[3],double velocity)
 		return 0;
 	}
 }
-#endif
 
 
 
-#ifdef DEBUG
+
 static  int gAngularVel[3] = { 0, 0 ,0 };
 static  double gVelocity[3] = { 0, 0 ,70 };
-void	ParaUpdate(void);	
-void RouteControl(void)
+
+void DebugMode(void)
 {
 	
 	//ParaUpdate();	
@@ -307,108 +305,6 @@ void RouteControl(void)
 	AngularVelUpdate(gBaseCenter,gVelocity,gAngularVel);
 //	VelocityUpdate(gBaseCenter,gAngularVel,gVelocity);
 }
-#endif
-
-
-
-#ifdef DATAPOOL
-/************global variable  define**********/
-static float gChainAngleAim[3]={0};
-static  int gChainCodeAim[RECORDPOINT][3]={0};
-static uint16_t trackOrder[10]={0};
-static uint32_t countNum=0;
-void test(void)
-{
-//int aaa[POOLSIZE]={1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
-//static int a=1;
-//int *result=GetResultArr();
-
-//if(a==0)
-//{
-//for(int i=0;i<POOLSIZE;i++)
-//aaa[i]=1;
-//for(int i=0;i<POOLSIZE;i++)
-//*(result+i)=aaa[i];
-//Flash_Write(GetFlashArr(),POOLSIZE*4);
-//	a=1;
-//}
-//if(a==1)
-//{
-//	a=2;
-//result=GetResultArr();
-//for(int i=0;i<4;i++)
-//	USART_OUT(UART5,(uint8_t*)"%d\r\n",*(result+i+POOLSIZE-4)+1);
-//}
-/*超出内存报警*/
-
-
-static int aaa[2]={0};
-
-if((aaa[0]!=*getPInstruct())||(aaa[1]!=*(getPInstruct()+1)))
-{
-	aaa[0]=*getPInstruct();
-	aaa[1]=*(getPInstruct()+1);
-	USART_OUT(UART5,(uint8_t*)"%s\r\n","input one successfully");
-}
-	
-
-
-}
-/**********function claim************/
-void ParaUpdate(void);
-uint8_t DataInput(void);
-
-void RouteControl(void)
-{
-		//ParaUpdate();
-		//DataInput();
-	test();
-}
-
-uint8_t DataInput(void)
-{
-  static uint8_t key=0;
-	static float baseCenter_Old_t={0,0,0};
-	static uint8_t keyCatch;
-	static uint8_t indexForPool=0;
-	static int *result;
-	
-	result=GetResultArr();
-	keyCatch=KeyCatch();
-	/*一次演示结束*/
-	if(keyCatch&&key==1)
-	{
-		indexForPool++;
-		key=0;
-		Flash_Write(GetFlashArr(),4000);
-	}
-	/*一次演示开始*/
-	if(keyCatch&&key==0)
-	{
-		key=1;
-		baseCenter_Old_t[0]=gBaseCenter[0];
-		baseCenter_Old_t[1]=gBaseCenter[1];
-		baseCenter_Old_t[2]=gBaseCenter[2];
-	}
-	/*把trackorder写成一个数组，输出每个trackorder，两次按键结束如果trackorder==0，则写flash*/
-	if(TOUCH(baseCenter_Old_t,gBaseCenter,7)&&key==1)
-	{
-		for(uint8_t i=0;i<3;i++)
-		{
-		gChainCodeAim[trackOrder[indexForPool]][i]=gChainCode[i];
-		*(result+trackOrder[indexForPool]*3+i)=gChainCodeAim[trackOrder[indexForPool]][i];
-		}
-		trackOrder[indexForPool]++;
-		//进来一次发一次发不完，改成最后一起发
-		baseCenter_Old_t[0]=gBaseCenter[0];
-		baseCenter_Old_t[1]=gBaseCenter[1];
-		baseCenter_Old_t[2]=gBaseCenter[2];
-	}
-	
-	return 1;
-}
-#endif
-
 
 
 

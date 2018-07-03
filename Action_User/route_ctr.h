@@ -27,8 +27,8 @@
 #include "stdlib.h"
 #include "elmo.h"
 /********define**********/
-
-
+void DebugMode(void);
+void WriteChuangXin(void);
 /********function export*********/
 void RouteControl(void);
 uint8_t KeyCatch(void);

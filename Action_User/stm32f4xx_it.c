@@ -201,230 +201,80 @@ void TIM4_IRQHandler(void)
 		TIM_ClearITPendingBit(TIM4, TIM_IT_Update);
 	}
 }
-#ifndef DATAPOOL
-static uint8_t intrctEnd=0;
-/*其实可以省略指令标志而节约内存，但是实际为了可读性强没有这么做*/
-static char instruct[1][15]={0};
-char* const pInstruct=instruct[0];
-static char intrctOrder=0;
-#else
-static int instruct[2]={0,0};
-int* const pInstruct=instruct;
-#endif
-/*你： 0xC4 0xE3  好：  0xBA 0xC3*/
-/**G0X+10Y+10Z250*/
+
+#define NUM_NUM	32
 void UART5_IRQHandler(void)
 {
-	uint8_t data = 0;
+	static uint8_t ch;
+	static union
+	{
+		uint8_t data[NUM_NUM];
+		float ActVal[8];
+	}posture;
 	static uint8_t count=0;
-	if(USART_GetITStatus(UART5, USART_IT_RXNE)==SET)
-	{
-		USART_ClearITPendingBit( UART5,USART_IT_RXNE);
-		data=USART_ReceiveData(UART5);
-	}
-		#ifndef DATAPOOL
-		switch(count)
-		{
-			case 0:
-				if(data=='G')
-				{
-					instruct[intrctOrder][count]=data;
-					count++;
-				}
-				else
-					//清除指令 并返回和报错
-					count=15;
-				break;
-			case 1:
-				if('0'<=data&&data<='3')
-				{
-					instruct[intrctOrder][count]=data;
-					count++;
-				}
-				else
-					count=15;
-				break;
-			case 2:
-				if(data=='X')
-				{
-					instruct[intrctOrder][count]=data;
-					count++;
-				}
-				else
-					count=15;
-				break;
-			case 3:
-				if(data=='+'||data=='-')
-				{
-					instruct[intrctOrder][count]=data;
-					count++;
-				}
-				else
-					count=15;
-				break;
-			case 4:
-				if('0'<=data&&data<='9')
-				{
-					instruct[intrctOrder][count]=data;
-					count++;
-				}
-				else
-					count=15;
-				break;
-			case 5:				
-				if('0'<=data&&data<='9')
-				{
-					instruct[intrctOrder][count]=data;
-					count++;
-				}
-				else
-					count=15;
-				break;
-			case 6:
-				if(data=='Y')
-				{
-					instruct[intrctOrder][count]=data;
-					count++;
-				}
-				else
-					count=15;
-				break;
-			case 7:
-				if(data=='+'||data=='-')
-				{
-					instruct[intrctOrder][count]=data;
-					count++;
-				}
-				else
-					count=15;
-				break;
-			case 8:
-				if('0'<=data&&data<='9')
-				{
-					instruct[intrctOrder][count]=data;
-					count++;
-				}
-				else
-					count=15;
-				break;
-			case 9:				
-				if('0'<=data&&data<='9')
-				{
-					instruct[intrctOrder][count]=data;
-					count++;
-				}
-				else
-					count=15;
-				break;
-			case 10:
-				if(data==';')
-					intrctEnd=1;
-				else if(data=='Z')
-				{
-					instruct[intrctOrder][count]=data;
-					count++;				
-				}
-				else
-					count=15;
-				break;
-			case 11:
-				if('0'<=data&&data<='9')
-				{
-					instruct[intrctOrder][count]=data;
-					count++;
-				}
-				else
-					count=15;
-				break;
-			case 12:
-				if('0'<=data&&data<='9')
-				{
-					instruct[intrctOrder][count]=data;
-					count++;
-				}
-				else
-					count=15;
-				break;
-			case 13:				
-				if('0'<=data&&data<='9')
-				{
-					instruct[intrctOrder][count]=data;
-					count++;
-				}
-				else
-					count=15;
-				break;
-			case 14:
-				if(data==';')
-					intrctEnd=1;
-				else
-					count=15;
-				break;
-			case 15:
-				count=0;
-				for(uint8_t i=0;i<14;i++)
-				instruct[intrctOrder][i]=0;
-		    intrctEnd=0;
-				break;
-		}
-		//一条指令结束的指令
-		if(intrctEnd==1)
-		{
-		if(count==10)
-		{
-		for(uint8_t i=10;i<14;i++)
-		instruct[intrctOrder][i]=0;
-		}
-//		intrctOrder++;
-//		if(intrctOrder)
-		count=0;
-		intrctEnd=0;
-		}
-		
-		
-	
-	#else
-	switch(count)
-	{
-		case 0:
-			instruct[0]=data;
-			count++;
-			break;
-		case 1:
-			instruct[1]=data;
-			count=0;
-		default:
-			count=0;
-			break;
-	}
-	 #endif
-	
-}
-#ifndef DATAPOOL
-char* getPInstruct(void)
-{
-		return pInstruct;
-}
-uint8_t getIntrctOrder(void)
-{
-		return intrctOrder;
-}
-#else
-int* getPInstruct(void)
-{
-		return pInstruct;
-}
-#endif
+	static uint8_t i=0;
 
-void USART3_IRQHandler(void)
-{
-	uint8_t data = 0;
-	if(USART_GetITStatus(USART3, USART_IT_RXNE)==SET)   
+	if(USART_GetITStatus(UART5, USART_IT_RXNE)==SET)   
 	{
-		USART_ClearITPendingBit( USART3,USART_IT_RXNE);
-		data=USART_ReceiveData(USART3);
+		USART_ClearITPendingBit(UART5,USART_IT_RXNE);
+		ch=USART_ReceiveData(UART5);		
+		 switch(count)
+		 {
+			 case 0:
+				 if(ch==0x0d||ch=='O')
+					 count++;
+				 else
+					 count=0;
+				 break;
+				 
+			 case 1:
+				 if(ch==0x0a)
+				 {
+					 i=0;
+					 count++;
+				 }
+				 else if(ch==0x0d);
+				 else if(ch=='K')
+				 {
+						count=0;
+				 }
+				 else
+					 count=0;
+				 break;
+				 
+			 case 2:
+				posture.data[i]=ch;
+			   i++;
+			   if(i>=NUM_NUM)
+				 {
+					 i=0;
+					 count++;
+				 }
+				 break;
+				 
+			 case 3:
+				 if(ch==0x0a)
+					 count++;
+				 else
+					 count=0;
+				 break;
+				 
+			 case 4:
+				 if(ch==0x0d)
+				 {
+
+				 break;
+			 
+			 default:
+				 count=0;
+			   break;		 
+		 }
+	 }
+ }
+	else
+	{
+		USART_ReceiveData(UART5);
 	}
-	 
 }
 
 

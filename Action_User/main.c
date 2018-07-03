@@ -43,12 +43,12 @@ int main(void)
 	init();
 	while(1)
 	{
-	while(getTimeFlag())
-	{
-	//	USART_OUT(USART3,"DDD");
-		RouteControl();
-//		RouteOutput();
-	}
+		while(getTimeFlag())
+		{
+
+			WriteChuangXin();
+
+		}
 	}
 }
 
